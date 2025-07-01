@@ -1,7 +1,9 @@
-import CalorieCalculator from '@/components/CalorieCalculator';
-import MotivationalBlog from '@/components/MotivationalBlog';
+import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const Index = () => {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen">
       {/* Header/Hero Section */}
@@ -9,19 +11,24 @@ const Index = () => {
         <div className="max-w-4xl mx-auto animate-fade-in">
           <div className="mb-6">
             <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-4">
-              Zero<span className="gradient-primary bg-clip-text text-transparent">Gram</span>
+              {t('home.title')}<span className="gradient-primary bg-clip-text text-transparent">{t('home.titleHighlight')}</span>
             </h1>
             <div className="w-24 h-1 gradient-primary mx-auto rounded-full mb-6"></div>
           </div>
           
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-            Sua jornada para uma vida mais saudável começa aqui
+            {t('home.subtitle')}
           </p>
           
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Calcule suas necessidades calóricas de forma inteligente e encontre inspiração 
-            para manter-se motivado em cada passo da sua transformação pessoal.
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
+            {t('home.description')}
           </p>
+
+          <Link to="/calculadora">
+            <Button size="lg" className="gradient-primary border-0 text-white font-medium">
+              {t('home.cta')}
+            </Button>
+          </Link>
         </div>
       </header>
 
