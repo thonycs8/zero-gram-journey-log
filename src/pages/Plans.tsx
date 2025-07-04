@@ -9,6 +9,93 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 const Plans = () => {
   const { t } = useTranslation();
   
+  const workoutPlans = [
+    {
+      id: 1,
+      name: 'Plano Iniciante',
+      description: 'Treino completo para quem está começando na musculação',
+      duration: '4 semanas',
+      frequency: '3x/semana',
+      difficulty: 'Fácil',
+      workouts: {
+        fullBody: [
+          { name: 'Agachamento', sets: '3x12', rest: '60s' },
+          { name: 'Flexão de braço', sets: '3x8', rest: '60s' },
+          { name: 'Remada com halteres', sets: '3x10', rest: '60s' },
+          { name: 'Prancha', sets: '3x30s', rest: '45s' }
+        ],
+        upper: [
+          { name: 'Supino com halteres', sets: '3x10', rest: '90s' },
+          { name: 'Puxada alta', sets: '3x12', rest: '60s' },
+          { name: 'Desenvolvimento', sets: '3x10', rest: '90s' },
+          { name: 'Rosca bíceps', sets: '3x12', rest: '45s' }
+        ],
+        lower: [
+          { name: 'Leg press', sets: '3x15', rest: '90s' },
+          { name: 'Stiff', sets: '3x12', rest: '60s' },
+          { name: 'Panturrilha', sets: '4x15', rest: '45s' },
+          { name: 'Abdução', sets: '3x12', rest: '45s' }
+        ]
+      }
+    },
+    {
+      id: 2,
+      name: 'Plano Intermediário',
+      description: 'Treino dividido para quem já tem experiência',
+      duration: '6 semanas',
+      frequency: '4x/semana',
+      difficulty: 'Médio',
+      workouts: {
+        push: [
+          { name: 'Supino reto', sets: '4x8', rest: '120s' },
+          { name: 'Desenvolvimento', sets: '3x10', rest: '90s' },
+          { name: 'Paralelas', sets: '3x12', rest: '90s' },
+          { name: 'Tríceps pulley', sets: '3x12', rest: '60s' }
+        ],
+        pull: [
+          { name: 'Barra fixa', sets: '4x8', rest: '120s' },
+          { name: 'Remada curvada', sets: '3x10', rest: '90s' },
+          { name: 'Puxada triangular', sets: '3x12', rest: '60s' },
+          { name: 'Rosca direta', sets: '3x12', rest: '60s' }
+        ],
+        legs: [
+          { name: 'Agachamento livre', sets: '4x10', rest: '150s' },
+          { name: 'Leg press 45°', sets: '3x15', rest: '90s' },
+          { name: 'Mesa flexora', sets: '3x12', rest: '60s' },
+          { name: 'Panturrilha em pé', sets: '4x20', rest: '45s' }
+        ]
+      }
+    },
+    {
+      id: 3,
+      name: 'Plano Avançado',
+      description: 'Treino intensivo para atletas experientes',
+      duration: '8 semanas',
+      frequency: '5x/semana',
+      difficulty: 'Avançado',
+      workouts: {
+        chest: [
+          { name: 'Supino reto', sets: '5x5', rest: '180s' },
+          { name: 'Supino inclinado', sets: '4x8', rest: '120s' },
+          { name: 'Crossover', sets: '3x12', rest: '60s' },
+          { name: 'Supino declinado', sets: '3x10', rest: '90s' }
+        ],
+        back: [
+          { name: 'Levantamento terra', sets: '5x5', rest: '180s' },
+          { name: 'Barra fixa', sets: '4x8', rest: '120s' },
+          { name: 'Remada T', sets: '4x10', rest: '90s' },
+          { name: 'Pullover', sets: '3x12', rest: '60s' }
+        ],
+        legs: [
+          { name: 'Agachamento livre', sets: '5x8', rest: '180s' },
+          { name: 'Bulgaro', sets: '4x10', rest: '90s' },
+          { name: 'Stiff', sets: '4x8', rest: '120s' },
+          { name: 'Avanço', sets: '3x12', rest: '60s' }
+        ]
+      }
+    }
+  ];
+
   const mealPlans = [
     {
       id: 1,
@@ -100,6 +187,130 @@ const Plans = () => {
     { key: 'dinner', label: t('plans.dinner'), icon: '🌙' },
     { key: 'snack', label: t('plans.snack'), icon: '🍎' }
   ];
+
+  const workoutTypes = [
+    { key: 'fullBody', label: 'Corpo Inteiro', icon: '💪' },
+    { key: 'upper', label: 'Trem Superior', icon: '🏋️' },
+    { key: 'lower', label: 'Trem Inferior', icon: '🦵' },
+    { key: 'push', label: 'Push (Empurrão)', icon: '👐' },
+    { key: 'pull', label: 'Pull (Puxada)', icon: '🤏' },
+    { key: 'legs', label: 'Pernas', icon: '🦵' },
+    { key: 'chest', label: 'Peito', icon: '💪' },
+    { key: 'back', label: 'Costas', icon: '🤸' }
+  ];
+
+  const WorkoutPlanCard = ({ plan }: { plan: typeof workoutPlans[0] }) => (
+    <Card className="glass-effect hover:shadow-lg transition-all duration-300">
+      <CardHeader>
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-xl font-bold">{plan.name}</CardTitle>
+            <CardDescription className="mt-2">{plan.description}</CardDescription>
+          </div>
+          <Badge variant="secondary">{plan.difficulty}</Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="text-center p-3 bg-muted/30 rounded-lg">
+            <p className="text-2xl font-bold text-primary">{plan.frequency}</p>
+            <p className="text-xs text-muted-foreground">frequência</p>
+          </div>
+          <div className="text-center p-3 bg-muted/30 rounded-lg">
+            <p className="text-lg font-bold text-foreground">{plan.duration}</p>
+            <p className="text-xs text-muted-foreground">duração</p>
+          </div>
+        </div>
+
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="w-full">Ver Treino Completo</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{plan.name}</DialogTitle>
+              <DialogDescription>{plan.description}</DialogDescription>
+            </DialogHeader>
+            
+            <Tabs defaultValue="preview" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="preview">Resumo</TabsTrigger>
+                <TabsTrigger value="detailed">Programa Semanal</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="preview" className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {workoutTypes.filter(type => plan.workouts[type.key as keyof typeof plan.workouts]).map((workoutType) => (
+                    <Card key={workoutType.key} className="bg-muted/30">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <span>{workoutType.icon}</span>
+                          {workoutType.label}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-2">
+                        {plan.workouts[workoutType.key as keyof typeof plan.workouts]?.map((exercise, index) => (
+                          <div key={index} className="flex justify-between items-center p-2 bg-background/50 rounded">
+                            <span className="text-sm">{exercise.name}</span>
+                            <div className="flex gap-2">
+                              <Badge variant="outline" className="text-xs">
+                                {exercise.sets}
+                              </Badge>
+                              <Badge variant="outline" className="text-xs">
+                                {exercise.rest}
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="detailed" className="space-y-4">
+                <div className="grid gap-4">
+                  {weekDays.slice(0, plan.frequency === '3x/semana' ? 3 : plan.frequency === '4x/semana' ? 4 : 5).map((day, dayIndex) => {
+                    const availableWorkouts = Object.keys(plan.workouts);
+                    const workoutKey = availableWorkouts[dayIndex % availableWorkouts.length];
+                    const workout = plan.workouts[workoutKey as keyof typeof plan.workouts];
+                    const workoutType = workoutTypes.find(type => type.key === workoutKey);
+                    
+                    return (
+                      <Card key={day} className="bg-muted/30">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-lg flex items-center gap-2">
+                            {day} - {workoutType?.icon} {workoutType?.label}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {workout?.map((exercise, exerciseIndex) => (
+                              <div key={exerciseIndex} className="text-center p-3 bg-background/50 rounded-lg">
+                                <p className="text-sm font-medium mb-2">{exercise.name}</p>
+                                <div className="flex justify-center gap-2">
+                                  <Badge variant="outline" className="text-xs">
+                                    {exercise.sets}
+                                  </Badge>
+                                  <Badge variant="outline" className="text-xs">
+                                    {exercise.rest}
+                                  </Badge>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </DialogContent>
+        </Dialog>
+      </CardContent>
+    </Card>
+  );
 
   const PlanCard = ({ plan }: { plan: typeof mealPlans[0] }) => (
     <Card className="glass-effect hover:shadow-lg transition-all duration-300">
@@ -213,15 +424,23 @@ const Plans = () => {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card className="gradient-secondary text-center">
           <CardContent className="pt-6">
             <div className="text-3xl mb-2">📋</div>
-            <h3 className="font-semibold">Planos Disponíveis</h3>
+            <h3 className="font-semibold">Planos Alimentares</h3>
             <p className="text-2xl font-bold text-primary">{mealPlans.length}</p>
           </CardContent>
         </Card>
         
+        <Card className="gradient-secondary text-center">
+          <CardContent className="pt-6">
+            <div className="text-3xl mb-2">💪</div>
+            <h3 className="font-semibold">Planos de Treino</h3>
+            <p className="text-2xl font-bold text-primary">{workoutPlans.length}</p>
+          </CardContent>
+        </Card>
+
         <Card className="gradient-secondary text-center">
           <CardContent className="pt-6">
             <div className="text-3xl mb-2">🍽️</div>
@@ -239,34 +458,79 @@ const Plans = () => {
         </Card>
       </div>
 
-      {/* Plans Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {mealPlans.map((plan, index) => (
-          <div 
-            key={plan.id} 
-            className="animate-fade-in"
-            style={{ animationDelay: `${index * 0.1}s` }}
-          >
-            <PlanCard plan={plan} />
-          </div>
-        ))}
-      </div>
+      {/* Main Tabs for Plan Types */}
+      <Tabs defaultValue="alimentares" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-8">
+          <TabsTrigger value="alimentares" className="text-base">
+            🍽️ Planos Alimentares
+          </TabsTrigger>
+          <TabsTrigger value="treinos" className="text-base">
+            💪 Planos de Treino
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Call to Action */}
-      <Card className="gradient-primary text-center">
-        <CardContent className="pt-6">
-          <div className="text-white space-y-4">
-            <div className="text-4xl">🎯</div>
-            <h3 className="text-xl font-semibold">Cria o Teu Plano Personalizado</h3>
-            <p className="text-white/90 max-w-md mx-auto">
-              Quer um plano feito especialmente para ti? Usa a nossa calculadora para definir as tuas necessidades.
-            </p>
-            <Button variant="secondary" className="mt-4">
-              {t('plans.createPlan')}
-            </Button>
+        {/* Meal Plans Tab */}
+        <TabsContent value="alimentares" className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mealPlans.map((plan, index) => (
+              <div 
+                key={plan.id} 
+                className="animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <PlanCard plan={plan} />
+              </div>
+            ))}
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Meal Plans Call to Action */}
+          <Card className="gradient-primary text-center">
+            <CardContent className="pt-6">
+              <div className="text-white space-y-4">
+                <div className="text-4xl">🎯</div>
+                <h3 className="text-xl font-semibold">Cria o Teu Plano Alimentar Personalizado</h3>
+                <p className="text-white/90 max-w-md mx-auto">
+                  Quer um plano alimentar feito especialmente para ti? Usa a nossa calculadora para definir as tuas necessidades calóricas.
+                </p>
+                <Button variant="secondary" className="mt-4">
+                  {t('plans.createPlan')}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Workout Plans Tab */}
+        <TabsContent value="treinos" className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {workoutPlans.map((plan, index) => (
+              <div 
+                key={plan.id} 
+                className="animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <WorkoutPlanCard plan={plan} />
+              </div>
+            ))}
+          </div>
+
+          {/* Workout Plans Call to Action */}
+          <Card className="gradient-primary text-center">
+            <CardContent className="pt-6">
+              <div className="text-white space-y-4">
+                <div className="text-4xl">🏋️</div>
+                <h3 className="text-xl font-semibold">Cria o Teu Plano de Treino Personalizado</h3>
+                <p className="text-white/90 max-w-md mx-auto">
+                  Quer um treino feito especialmente para ti? Define os teus objetivos e cria um plano personalizado.
+                </p>
+                <Button variant="secondary" className="mt-4">
+                  Criar Plano de Treino
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
