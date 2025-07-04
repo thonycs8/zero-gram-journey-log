@@ -26,11 +26,18 @@ const Index = () => {
             {t('home.description')}
           </p>
 
-          <Link to="/calculadora">
-            <Button size="lg" className="gradient-primary border-0 text-white font-medium">
-              {t('home.cta')}
-            </Button>
-          </Link>
+          <div className="flex gap-4 justify-center">
+            <Link to="/calculadora">
+              <Button size="lg" className="gradient-primary border-0 text-white font-medium">
+                {t('home.cta')}
+              </Button>
+            </Link>
+            <Link to="/auth">
+              <Button size="lg" variant="outline">
+                Entrar / Registar
+              </Button>
+            </Link>
+          </div>
         </div>
       </header>
 

@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calculator, Menu } from 'lucide-react';
+import { Calculator, Menu, User, LogOut, Settings } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
 const NavigationHeader = () => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const { user, isAdmin, signOut, loading } = useAuth();
 
   const navigationItems = [
     { path: '/', label: t('nav.home') },
@@ -18,6 +21,7 @@ const NavigationHeader = () => {
     { path: '/receitas', label: t('nav.recipes') },
     { path: '/planos', label: t('nav.plans') },
     { path: '/blog', label: t('nav.blog') },
+    ...(isAdmin ? [{ path: '/admin', label: 'Admin' }] : []),
     { path: '/perfil', label: t('nav.profile') }
   ];
 
@@ -67,7 +71,7 @@ const NavigationHeader = () => {
           <NavLinks />
         </nav>
 
-        {/* Language Selector & Mobile Menu */}
+        {/* Language Selector & Auth */}
         <div className="flex items-center space-x-4">
           <Select value={i18n.language} onValueChange={changeLanguage}>
             <SelectTrigger className="w-20 h-9">
@@ -78,6 +82,51 @@ const NavigationHeader = () => {
               <SelectItem value="en">🇬🇧 EN</SelectItem>
             </SelectContent>
           </Select>
+
+          {/* Auth Section */}
+          {loading ? (
+            <div className="w-8 h-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+          ) : user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                  {user.email}
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/perfil" className="flex items-center">
+                    <User className="mr-2 h-4 w-4" />
+                    Perfil
+                  </Link>
+                </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin" className="flex items-center">
+                      <Settings className="mr-2 h-4 w-4" />
+                      Admin
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={signOut}
+                  className="flex items-center text-destructive focus:text-destructive"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button asChild variant="default">
+              <Link to="/auth">Entrar</Link>
+            </Button>
+          )}
 
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -97,6 +146,32 @@ const NavigationHeader = () => {
                 <nav className="flex flex-col">
                   <NavLinks mobile={true} />
                 </nav>
+                
+                {/* Mobile Auth */}
+                <div className="px-4 pt-4 border-t">
+                  {user ? (
+                    <div className="space-y-2">
+                      <div className="text-sm text-muted-foreground">
+                        {user.email}
+                      </div>
+                      <Button 
+                        onClick={signOut} 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Sair
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button asChild className="w-full">
+                      <Link to="/auth" onClick={() => setIsOpen(false)}>
+                        Entrar
+                      </Link>
+                    </Button>
+                  )}
+                </div>
               </div>
             </SheetContent>
           </Sheet>
