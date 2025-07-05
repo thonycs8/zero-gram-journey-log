@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,6 +22,7 @@ interface CalorieResult {
 }
 
 const CalorieCalculator = () => {
+  const { t } = useTranslation();
   const [data, setData] = useState<CalorieData>({
     age: '',
     gender: '',
@@ -80,16 +82,16 @@ const CalorieCalculator = () => {
         <div className="mx-auto w-12 h-12 gradient-primary rounded-full flex items-center justify-center mb-4">
           <Calculator className="h-6 w-6 text-white" />
         </div>
-        <CardTitle className="text-2xl font-semibold">Calculadora de Calorias</CardTitle>
+        <CardTitle className="text-2xl font-semibold">{t('calculator.title')}</CardTitle>
         <CardDescription>
-          Descubra suas necessidades calóricas diárias de forma precisa
+          {t('calculator.description')}
         </CardDescription>
       </CardHeader>
       
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="age">Idade</Label>
+            <Label htmlFor="age">{t('calculator.age')}</Label>
             <Input
               id="age"
               type="number"
@@ -101,20 +103,20 @@ const CalorieCalculator = () => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="gender">Sexo</Label>
+            <Label htmlFor="gender">{t('calculator.gender')}</Label>
             <Select value={data.gender} onValueChange={(value) => setData({ ...data, gender: value })}>
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="male">Masculino</SelectItem>
-                <SelectItem value="female">Feminino</SelectItem>
+                <SelectItem value="male">{t('calculator.male')}</SelectItem>
+                <SelectItem value="female">{t('calculator.female')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="weight">Peso (kg)</Label>
+            <Label htmlFor="weight">{t('calculator.weight')}</Label>
             <Input
               id="weight"
               type="number"
@@ -127,7 +129,7 @@ const CalorieCalculator = () => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="height">Altura (cm)</Label>
+            <Label htmlFor="height">{t('calculator.height')}</Label>
             <Input
               id="height"
               type="number"
@@ -140,17 +142,17 @@ const CalorieCalculator = () => {
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="activity">Nível de Atividade</Label>
+          <Label htmlFor="activity">{t('calculator.activity')}</Label>
           <Select value={data.activity} onValueChange={(value) => setData({ ...data, activity: value })}>
             <SelectTrigger>
               <SelectValue placeholder="Selecione seu nível de atividade" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="sedentary">Sedentário (pouco ou nenhum exercício)</SelectItem>
-              <SelectItem value="light">Levemente ativo (exercício leve 1-3 dias/semana)</SelectItem>
-              <SelectItem value="moderate">Moderadamente ativo (exercício moderado 3-5 dias/semana)</SelectItem>
-              <SelectItem value="active">Ativo (exercício intenso 6-7 dias/semana)</SelectItem>
-              <SelectItem value="veryActive">Muito ativo (exercício muito intenso, trabalho físico)</SelectItem>
+              <SelectItem value="sedentary">{t('calculator.sedentary')}</SelectItem>
+              <SelectItem value="light">{t('calculator.light')}</SelectItem>
+              <SelectItem value="moderate">{t('calculator.moderate')}</SelectItem>
+              <SelectItem value="active">{t('calculator.active')}</SelectItem>
+              <SelectItem value="veryActive">{t('calculator.veryActive')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -160,31 +162,30 @@ const CalorieCalculator = () => {
           className="w-full gradient-primary border-0 text-white font-medium h-12 text-lg"
           disabled={isCalculating || !data.age || !data.gender || !data.weight || !data.height || !data.activity}
         >
-          {isCalculating ? 'Calculando...' : 'Calcular Calorias'}
+          {isCalculating ? t('calculator.calculating') : t('calculator.calculate')}
         </Button>
         
         {result && (
           <Card className="gradient-secondary animate-slide-up">
             <CardContent className="pt-6">
               <div className="text-center space-y-3">
-                <h3 className="text-xl font-semibold text-foreground">Seus Resultados</h3>
+                <h3 className="text-xl font-semibold text-foreground">{t('calculator.results')}</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-white/50 rounded-lg p-4">
-                    <p className="text-sm text-muted-foreground">Metabolismo Basal (BMR)</p>
+                    <p className="text-sm text-muted-foreground">{t('calculator.bmr')}</p>
                     <p className="text-2xl font-bold text-foreground">{result.bmr}</p>
-                    <p className="text-xs text-muted-foreground">calorias/dia</p>
+                    <p className="text-xs text-muted-foreground">{t('calculator.calories')}/dia</p>
                   </div>
                   <div className="bg-white/50 rounded-lg p-4">
-                    <p className="text-sm text-muted-foreground">Calorias Diárias</p>
+                    <p className="text-sm text-muted-foreground">{t('calculator.dailyCalories')}</p>
                     <p className="text-2xl font-bold text-primary">{result.calories}</p>
-                    <p className="text-xs text-muted-foreground">para manter peso</p>
+                    <p className="text-xs text-muted-foreground">{t('calculator.maintain')}</p>
                   </div>
                 </div>
                 <div className="mt-4 p-4 bg-white/30 rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-2">💡 Dica personalizada:</p>
+                  <p className="text-sm text-muted-foreground mb-2">{t('calculator.tip')}</p>
                   <p className="text-sm text-foreground">
-                    Para perder peso saudavelmente, reduza 300-500 calorias da sua necessidade diária. 
-                    Para ganhar peso, adicione 300-500 calorias.
+                    {t('calculator.tipText')}
                   </p>
                 </div>
               </div>
