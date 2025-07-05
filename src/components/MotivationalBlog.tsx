@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useTranslation } from 'react-i18next';
 
 const blogPosts = [
   {
@@ -48,13 +49,14 @@ const motivationalQuotes = [
 ];
 
 const MotivationalBlog = () => {
+  const { t } = useTranslation();
   return (
     <div className="w-full max-w-6xl mx-auto space-y-8">
       {/* Header */}
       <div className="text-center space-y-4 animate-fade-in">
-        <h2 className="text-3xl font-bold text-foreground">Blog ZeroGram</h2>
+        <h2 className="text-3xl font-bold text-foreground">{t('blog.title')}</h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Inspiração, dicas e conhecimento para acompanhar você em cada passo da sua jornada saudável
+          {t('blog.subtitle')}
         </p>
       </div>
 
@@ -63,9 +65,9 @@ const MotivationalBlog = () => {
         <CardContent className="pt-6">
           <div className="text-center">
             <blockquote className="text-xl font-medium text-foreground italic">
-              "{motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)]}"
+              "{t('blog.quotes')[Math.floor(Math.random() * t('blog.quotes').length)]}"
             </blockquote>
-            <p className="text-sm text-muted-foreground mt-2">💪 Motivação do dia</p>
+            <p className="text-sm text-muted-foreground mt-2">{t('blog.motivationOfDay')}</p>
           </div>
         </CardContent>
       </Card>
@@ -103,7 +105,7 @@ const MotivationalBlog = () => {
               </p>
               <div className="mt-4 pt-4 border-t border-border">
                 <span className="text-xs text-primary font-medium hover:underline cursor-pointer">
-                  Ler artigo completo →
+                  {t('blog.readMore')}
                 </span>
               </div>
             </CardContent>
@@ -114,29 +116,29 @@ const MotivationalBlog = () => {
       {/* Dicas rápidas */}
       <Card className="glass-effect animate-fade-in">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold text-center">🎯 Dicas Rápidas</CardTitle>
+          <CardTitle className="text-xl font-semibold text-center">{t('blog.quickTips')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4 bg-muted/30 rounded-lg">
               <div className="text-2xl mb-2">🍎</div>
-              <h4 className="font-medium mb-1">Foque na Qualidade</h4>
+              <h4 className="font-medium mb-1">{t('blog.focusQuality')}</h4>
               <p className="text-xs text-muted-foreground">
-                Prefira alimentos integrais e minimamente processados
+                {t('blog.focusQualityText')}
               </p>
             </div>
             <div className="text-center p-4 bg-muted/30 rounded-lg">
               <div className="text-2xl mb-2">⏰</div>
-              <h4 className="font-medium mb-1">Seja Consistente</h4>
+              <h4 className="font-medium mb-1">{t('blog.beConsistent')}</h4>
               <p className="text-xs text-muted-foreground">
-                Pequenas mudanças diárias geram grandes resultados
+                {t('blog.beConsistentText')}
               </p>
             </div>
             <div className="text-center p-4 bg-muted/30 rounded-lg">
               <div className="text-2xl mb-2">🎉</div>
-              <h4 className="font-medium mb-1">Celebre Vitórias</h4>
+              <h4 className="font-medium mb-1">{t('blog.celebrateWins')}</h4>
               <p className="text-xs text-muted-foreground">
-                Reconheça cada passo em direção aos seus objetivos
+                {t('blog.celebrateWinsText')}
               </p>
             </div>
           </div>

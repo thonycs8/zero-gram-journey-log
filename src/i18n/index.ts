@@ -107,7 +107,13 @@ const resources = {
         beConsistent: 'Sê Consistente',
         beConsistentText: 'Pequenas mudanças diárias geram grandes resultados',
         celebrateWins: 'Celebra Vitórias',
-        celebrateWinsText: 'Reconhece cada passo em direção aos teus objetivos'
+        celebrateWinsText: 'Reconhece cada passo em direção aos teus objetivos',
+        quotes: [
+          'A tua única competição é quem eras ontem',
+          'Pequenos progressos continuam a ser progressos',
+          'Cuida do teu corpo, é o único lugar que tens para viver',
+          'A mudança começa no momento em que decides tentar'
+        ]
       },
       
       // Perfil
@@ -257,7 +263,13 @@ const resources = {
         beConsistent: 'Be Consistent',
         beConsistentText: 'Small daily changes generate big results',
         celebrateWins: 'Celebrate Wins',
-        celebrateWinsText: 'Recognize every step towards your goals'
+        celebrateWinsText: 'Recognize every step towards your goals',
+        quotes: [
+          'Your only competition is who you were yesterday',
+          'Small progress is still progress',
+          'Take care of your body, it\'s the only place you have to live',
+          'Change begins the moment you decide to try'
+        ]
       },
       
       // Profile
