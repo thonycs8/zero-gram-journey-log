@@ -1,6 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { RefreshCw } from 'lucide-react';
+import { useMotivationalQuote } from '@/hooks/useMotivationalQuote';
 
 const blogPosts = [
   {
@@ -41,15 +44,9 @@ const blogPosts = [
   }
 ];
 
-const motivationalQuotes = [
-  "Sua única competição é quem você era ontem",
-  "Pequenos progressos ainda são progressos",
-  "Cuide do seu corpo, é o único lugar que você tem para viver",
-  "A mudança começa no momento em que você decide tentar"
-];
-
 const MotivationalBlog = () => {
   const { t } = useTranslation();
+  const { quote, loading, refreshQuote } = useMotivationalQuote();
   return (
     <div className="w-full max-w-6xl mx-auto space-y-8">
       {/* Header */}
@@ -65,9 +62,21 @@ const MotivationalBlog = () => {
         <CardContent className="pt-6">
           <div className="text-center">
             <blockquote className="text-xl font-medium text-foreground italic">
-              "{t('blog.quotes')[Math.floor(Math.random() * t('blog.quotes').length)]}"
+              {loading ? 'Carregando inspiração...' : `"${quote}"`}
             </blockquote>
-            <p className="text-sm text-muted-foreground mt-2">{t('blog.motivationOfDay')}</p>
+            <div className="flex items-center justify-center gap-4 mt-4">
+              <p className="text-sm text-muted-foreground">{t('blog.motivationOfDay')}</p>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={refreshQuote}
+                disabled={loading}
+                className="gap-2 text-xs"
+              >
+                <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
+                Nova
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
