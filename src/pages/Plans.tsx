@@ -12,11 +12,11 @@ const Plans = () => {
   const workoutPlans = [
     {
       id: 1,
-      name: 'Plano Iniciante',
-      description: 'Treino completo para quem está começando na musculação',
+      name: t('plans.beginnerPlan'),
+      description: t('plans.beginnerDesc'),
       duration: '4 semanas',
       frequency: '3x/semana',
-      difficulty: 'Fácil',
+      difficulty: t('plans.easy'),
       workouts: {
         fullBody: [
           { name: 'Agachamento', sets: '3x12', rest: '60s' },
@@ -40,11 +40,11 @@ const Plans = () => {
     },
     {
       id: 2,
-      name: 'Plano Intermediário',
-      description: 'Treino dividido para quem já tem experiência',
+      name: t('plans.intermediatePlan'),
+      description: t('plans.intermediateDesc'),
       duration: '6 semanas',
       frequency: '4x/semana',
-      difficulty: 'Médio',
+      difficulty: t('plans.medium'),
       workouts: {
         push: [
           { name: 'Supino reto', sets: '4x8', rest: '120s' },
@@ -68,11 +68,11 @@ const Plans = () => {
     },
     {
       id: 3,
-      name: 'Plano Avançado',
-      description: 'Treino intensivo para atletas experientes',
+      name: t('plans.advancedPlan'),
+      description: t('plans.advancedDesc'),
       duration: '8 semanas',
       frequency: '5x/semana',
-      difficulty: 'Avançado',
+      difficulty: t('plans.advanced'),
       workouts: {
         chest: [
           { name: 'Supino reto', sets: '5x5', rest: '180s' },
@@ -99,11 +99,11 @@ const Plans = () => {
   const mealPlans = [
     {
       id: 1,
-      name: 'Plano Mediterrânico',
-      description: 'Plano alimentar inspirado na dieta mediterrânica, rica em vegetais e peixes',
+      name: t('plans.mediterranean'),
+      description: t('plans.mediterraneanDesc'),
       calories: 1800,
       duration: '7 dias',
-      difficulty: 'Fácil',
+      difficulty: t('plans.easy'),
       meals: {
         breakfast: [
           { name: 'Iogurte grego com frutos vermelhos', calories: 280 },
@@ -125,11 +125,11 @@ const Plans = () => {
     },
     {
       id: 2,
-      name: 'Plano Proteico',
-      description: 'Focado em alimentos ricos em proteína para ganho de massa muscular',
+      name: t('plans.protein'),
+      description: t('plans.proteinDesc'),
       calories: 2200,
       duration: '7 dias',
-      difficulty: 'Médio',
+      difficulty: t('plans.medium'),
       meals: {
         breakfast: [
           { name: 'Ovos mexidos com espinafres', calories: 350 },
@@ -151,11 +151,11 @@ const Plans = () => {
     },
     {
       id: 3,
-      name: 'Plano Vegetariano',
-      description: 'Opções vegetarianas equilibradas e nutritivas para todos os gostos',
+      name: t('plans.vegetarian'),
+      description: t('plans.vegetarianDesc'),
       calories: 1600,
       duration: '7 dias',
-      difficulty: 'Fácil',
+      difficulty: t('plans.easy'),
       meals: {
         breakfast: [
           { name: 'Aveia com banana e mel', calories: 300 },
@@ -214,17 +214,17 @@ const Plans = () => {
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-3 bg-muted/30 rounded-lg">
             <p className="text-2xl font-bold text-primary">{plan.frequency}</p>
-            <p className="text-xs text-muted-foreground">frequência</p>
+            <p className="text-xs text-muted-foreground">{t('plans.frequency')}</p>
           </div>
           <div className="text-center p-3 bg-muted/30 rounded-lg">
             <p className="text-lg font-bold text-foreground">{plan.duration}</p>
-            <p className="text-xs text-muted-foreground">duração</p>
+            <p className="text-xs text-muted-foreground">{t('plans.duration')}</p>
           </div>
         </div>
 
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="w-full">Ver Treino Completo</Button>
+            <Button className="w-full">{t('plans.viewFullWorkout')}</Button>
           </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
@@ -327,17 +327,17 @@ const Plans = () => {
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-3 bg-muted/30 rounded-lg">
             <p className="text-2xl font-bold text-primary">{plan.calories}</p>
-            <p className="text-xs text-muted-foreground">calorias/dia</p>
+            <p className="text-xs text-muted-foreground">{t('plans.caloriesPerDay')}</p>
           </div>
           <div className="text-center p-3 bg-muted/30 rounded-lg">
             <p className="text-lg font-bold text-foreground">{plan.duration}</p>
-            <p className="text-xs text-muted-foreground">duração</p>
+            <p className="text-xs text-muted-foreground">{t('plans.duration')}</p>
           </div>
         </div>
 
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="w-full">Ver Plano Completo</Button>
+            <Button className="w-full">{t('plans.viewFullPlan')}</Button>
           </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
@@ -428,7 +428,7 @@ const Plans = () => {
         <Card className="gradient-secondary text-center">
           <CardContent className="pt-6">
             <div className="text-3xl mb-2">📋</div>
-            <h3 className="font-semibold">Planos Alimentares</h3>
+            <h3 className="font-semibold">{t('plans.mealPlans')}</h3>
             <p className="text-2xl font-bold text-primary">{mealPlans.length}</p>
           </CardContent>
         </Card>
@@ -436,7 +436,7 @@ const Plans = () => {
         <Card className="gradient-secondary text-center">
           <CardContent className="pt-6">
             <div className="text-3xl mb-2">💪</div>
-            <h3 className="font-semibold">Planos de Treino</h3>
+            <h3 className="font-semibold">{t('plans.workoutPlans')}</h3>
             <p className="text-2xl font-bold text-primary">{workoutPlans.length}</p>
           </CardContent>
         </Card>
@@ -444,7 +444,7 @@ const Plans = () => {
         <Card className="gradient-secondary text-center">
           <CardContent className="pt-6">
             <div className="text-3xl mb-2">🍽️</div>
-            <h3 className="font-semibold">Refeições por Dia</h3>
+            <h3 className="font-semibold">{t('plans.mealsPerDay')}</h3>
             <p className="text-2xl font-bold text-primary">4</p>
           </CardContent>
         </Card>
@@ -452,8 +452,8 @@ const Plans = () => {
         <Card className="gradient-secondary text-center">
           <CardContent className="pt-6">
             <div className="text-3xl mb-2">⭐</div>
-            <h3 className="font-semibold">Personalização</h3>
-            <p className="text-sm text-muted-foreground">Adaptado às tuas necessidades</p>
+            <h3 className="font-semibold">{t('plans.personalization')}</h3>
+            <p className="text-sm text-muted-foreground">{t('plans.personalizationDesc')}</p>
           </CardContent>
         </Card>
       </div>
@@ -462,10 +462,10 @@ const Plans = () => {
       <Tabs defaultValue="alimentares" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-8">
           <TabsTrigger value="alimentares" className="text-base">
-            🍽️ Planos Alimentares
+            {t('plans.mealPlansTab')}
           </TabsTrigger>
           <TabsTrigger value="treinos" className="text-base">
-            💪 Planos de Treino
+            {t('plans.workoutPlansTab')}
           </TabsTrigger>
         </TabsList>
 
@@ -488,9 +488,9 @@ const Plans = () => {
             <CardContent className="pt-6">
               <div className="text-white space-y-4">
                 <div className="text-4xl">🎯</div>
-                <h3 className="text-xl font-semibold">Cria o Teu Plano Alimentar Personalizado</h3>
+                <h3 className="text-xl font-semibold">{t('plans.createPersonalizedPlan')}</h3>
                 <p className="text-white/90 max-w-md mx-auto">
-                  Quer um plano alimentar feito especialmente para ti? Usa a nossa calculadora para definir as tuas necessidades calóricas.
+                  {t('plans.createPersonalizedPlanDesc')}
                 </p>
                 <Button variant="secondary" className="mt-4">
                   {t('plans.createPlan')}
@@ -519,12 +519,12 @@ const Plans = () => {
             <CardContent className="pt-6">
               <div className="text-white space-y-4">
                 <div className="text-4xl">🏋️</div>
-                <h3 className="text-xl font-semibold">Cria o Teu Plano de Treino Personalizado</h3>
+                <h3 className="text-xl font-semibold">{t('plans.createPersonalizedWorkout')}</h3>
                 <p className="text-white/90 max-w-md mx-auto">
-                  Quer um treino feito especialmente para ti? Define os teus objetivos e cria um plano personalizado.
+                  {t('plans.createPersonalizedWorkoutDesc')}
                 </p>
                 <Button variant="secondary" className="mt-4">
-                  Criar Plano de Treino
+                  {t('plans.createWorkoutPlan')}
                 </Button>
               </div>
             </CardContent>

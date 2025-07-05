@@ -92,7 +92,47 @@ const resources = {
         snack: 'Lanche',
         createPlan: 'Criar Plano',
         savePlan: 'Guardar Plano',
-        myPlans: 'Os Meus Planos'
+        myPlans: 'Os Meus Planos',
+        // Cards estatísticas
+        mealPlans: 'Planos Alimentares',
+        workoutPlans: 'Planos de Treino',
+        mealsPerDay: 'Refeições por Dia',
+        personalization: 'Personalização',
+        personalizationDesc: 'Adaptado às tuas necessidades',
+        // Tabs
+        mealPlansTab: '🍽️ Planos Alimentares',
+        workoutPlansTab: '💪 Planos de Treino',
+        // Planos alimentares
+        mediterranean: 'Plano Mediterrânico',
+        mediterraneanDesc: 'Plano alimentar inspirado na dieta mediterrânica, rica em vegetais e peixes',
+        protein: 'Plano Proteico',
+        proteinDesc: 'Focado em alimentos ricos em proteína para ganho de massa muscular',
+        vegetarian: 'Plano Vegetariano', 
+        vegetarianDesc: 'Opções vegetarianas equilibradas e nutritivas para todos os gostos',
+        // Planos de treino
+        beginnerPlan: 'Plano Iniciante',
+        beginnerDesc: 'Treino completo para quem está começando na musculação',
+        intermediatePlan: 'Plano Intermediário',
+        intermediateDesc: 'Treino dividido para quem já tem experiência',
+        advancedPlan: 'Plano Avançado',
+        advancedDesc: 'Treino intensivo para atletas experientes',
+        // Detalhes
+        caloriesPerDay: 'calorias/dia',
+        duration: 'duração',
+        frequency: 'frequência',
+        viewFullPlan: 'Ver Plano Completo',
+        viewFullWorkout: 'Ver Treino Completo',
+        // CTA
+        createPersonalizedPlan: 'Cria o Teu Plano Alimentar Personalizado',
+        createPersonalizedPlanDesc: 'Quer um plano alimentar feito especialmente para ti? Usa a nossa calculadora para definir as tuas necessidades calóricas.',
+        createPersonalizedWorkout: 'Cria o Teu Plano de Treino Personalizado',
+        createPersonalizedWorkoutDesc: 'Quer um treino feito especialmente para ti? Define os teus objetivos e cria um plano personalizado.',
+        createWorkoutPlan: 'Criar Plano de Treino',
+        // Dificuldade
+        easy: 'Fácil',
+        medium: 'Médio',
+        hard: 'Difícil',
+        advanced: 'Avançado'
       },
       
       // Blog
@@ -248,7 +288,47 @@ const resources = {
         snack: 'Snack',
         createPlan: 'Create Plan',
         savePlan: 'Save Plan',
-        myPlans: 'My Plans'
+        myPlans: 'My Plans',
+        // Cards estatísticas
+        mealPlans: 'Meal Plans',
+        workoutPlans: 'Workout Plans',
+        mealsPerDay: 'Meals per Day',
+        personalization: 'Personalization',
+        personalizationDesc: 'Adapted to your needs',
+        // Tabs
+        mealPlansTab: '🍽️ Meal Plans',
+        workoutPlansTab: '💪 Workout Plans',
+        // Planos alimentares
+        mediterranean: 'Mediterranean Plan',
+        mediterraneanDesc: 'Meal plan inspired by the Mediterranean diet, rich in vegetables and fish',
+        protein: 'Protein Plan',
+        proteinDesc: 'Focused on protein-rich foods for muscle mass gain',
+        vegetarian: 'Vegetarian Plan', 
+        vegetarianDesc: 'Balanced and nutritious vegetarian options for all tastes',
+        // Planos de treino
+        beginnerPlan: 'Beginner Plan',
+        beginnerDesc: 'Complete workout for those starting in weight training',
+        intermediatePlan: 'Intermediate Plan',
+        intermediateDesc: 'Split workout for those with experience',
+        advancedPlan: 'Advanced Plan',
+        advancedDesc: 'Intensive training for experienced athletes',
+        // Detalhes
+        caloriesPerDay: 'calories/day',
+        duration: 'duration',
+        frequency: 'frequency',
+        viewFullPlan: 'View Full Plan',
+        viewFullWorkout: 'View Full Workout',
+        // CTA
+        createPersonalizedPlan: 'Create Your Personalized Meal Plan',
+        createPersonalizedPlanDesc: 'Want a meal plan made especially for you? Use our calculator to define your caloric needs.',
+        createPersonalizedWorkout: 'Create Your Personalized Workout Plan',
+        createPersonalizedWorkoutDesc: 'Want a workout made especially for you? Define your goals and create a personalized plan.',
+        createWorkoutPlan: 'Create Workout Plan',
+        // Dificuldade
+        easy: 'Easy',
+        medium: 'Medium',
+        hard: 'Hard',
+        advanced: 'Advanced'
       },
       
       // Blog
