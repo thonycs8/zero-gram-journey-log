@@ -35,12 +35,12 @@ const resources = {
         female: 'Feminino',
         weight: 'Peso (kg)',
         height: 'Altura (cm)',
-        activity: 'Nível de Actividade',
+        activity: 'Nível de Atividade',
         sedentary: 'Sedentário (pouco ou nenhum exercício)',
-        light: 'Levemente activo (exercício leve 1-3 dias/semana)',
-        moderate: 'Moderadamente activo (exercício moderado 3-5 dias/semana)',
-        active: 'Activo (exercício intenso 6-7 dias/semana)',
-        veryActive: 'Muito activo (exercício muito intenso, trabalho físico)',
+        light: 'Levemente ativo (exercício leve 1-3 dias/semana)',
+        moderate: 'Moderadamente ativo (exercício moderado 3-5 dias/semana)',
+        active: 'Ativo (exercício intenso 6-7 dias/semana)',
+        veryActive: 'Muito ativo (exercício muito intenso, trabalho físico)',
         calculate: 'Calcular Calorias',
         calculating: 'A calcular...',
         results: 'Os Teus Resultados',
@@ -59,11 +59,11 @@ const resources = {
         weekProgress: 'Progresso Semanal',
         totalCalculations: 'Cálculos Realizados',
         averageCalories: 'Média de Calorias',
-        recentActivity: 'Actividade Recente',
-        quickActions: 'Acções Rápidas',
+        recentActivity: 'Atividade Recente',
+        quickActions: 'Ações Rápidas',
         newCalculation: 'Novo Cálculo',
         viewHistory: 'Ver Histórico',
-        updateGoals: 'Actualizar Metas'
+        updateGoals: 'Atualizar Metas'
       },
       
       // Receitas
@@ -72,7 +72,7 @@ const resources = {
         subtitle: 'Deliciosas opções para a tua jornada',
         calories: 'calorias',
         servings: 'porções',
-        prepTime: 'tempo prep',
+        prepTime: 'tempo de preparação',
         difficulty: 'dificuldade',
         easy: 'Fácil',
         medium: 'Médio',
@@ -85,7 +85,7 @@ const resources = {
       // Planos
       plans: {
         title: 'Planos Alimentares',
-        subtitle: 'Planifica as tuas refeições para o sucesso',
+        subtitle: 'Planeja as tuas refeições para o sucesso',
         breakfast: 'Pequeno-almoço',
         lunch: 'Almoço',
         dinner: 'Jantar',
@@ -107,14 +107,14 @@ const resources = {
         beConsistent: 'Sê Consistente',
         beConsistentText: 'Pequenas mudanças diárias geram grandes resultados',
         celebrateWins: 'Celebra Vitórias',
-        celebrateWinsText: 'Reconhece cada passo em direcção aos teus objectivos'
+        celebrateWinsText: 'Reconhece cada passo em direção aos teus objetivos'
       },
       
       // Perfil
       profile: {
         title: 'O Teu Perfil',
         personalInfo: 'Informação Pessoal',
-        goals: 'Objectivos',
+        goals: 'Objetivos',
         preferences: 'Preferências',
         statistics: 'Estatísticas',
         settings: 'Definições'
@@ -299,11 +299,10 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'pt', // idioma padrão
+    lng: 'pt',
     fallbackLng: 'pt',
-    
     interpolation: {
-      escapeValue: false // react já faz escape
+      escapeValue: false
     }
   });
 
