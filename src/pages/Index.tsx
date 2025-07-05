@@ -63,23 +63,22 @@ const Index = () => {
         <div className="max-w-4xl mx-auto text-center">
           <div className="gradient-secondary p-8 rounded-2xl glass-effect">
             <h3 className="text-2xl font-semibold text-foreground mb-4">
-              Pronto para começar sua transformação?
+              {t('footer.ready')}
             </h3>
             <p className="text-muted-foreground mb-6">
-              Lembre-se: cada grande jornada começa com um pequeno passo. 
-              O seu primeiro passo pode ser hoje mesmo.
+              {t('footer.journey')}
             </p>
             <div className="flex justify-center space-x-8 text-sm text-muted-foreground">
-              <span>💚 Saudável</span>
-              <span>🎯 Personalizado</span>
-              <span>📈 Progressivo</span>
-              <span>🌟 Motivacional</span>
+              <span>{t('footer.features.healthy')}</span>
+              <span>{t('footer.features.personalized')}</span>
+              <span>{t('footer.features.progressive')}</span>
+              <span>{t('footer.features.motivational')}</span>
             </div>
           </div>
           
           <div className="mt-8 pt-8 border-t border-border">
             <p className="text-sm text-muted-foreground">
-              © 2024 ZeroGram. Feito com 💚 para sua jornada saudável.
+              {t('footer.copyright')}
             </p>
           </div>
         </div>
