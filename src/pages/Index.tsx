@@ -34,7 +34,7 @@ const Index = () => {
             </Link>
             <Link to="/auth">
               <Button size="lg" variant="outline">
-                Entrar / Registar
+                {t('auth.loginRegister')}
               </Button>
             </Link>
           </div>

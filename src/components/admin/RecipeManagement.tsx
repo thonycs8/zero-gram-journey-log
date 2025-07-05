@@ -34,7 +34,6 @@ export const RecipeManagement = ({ recipes, onDataChange }: RecipeManagementProp
     servings: 4,
     calories: 0,
     difficulty: 'Fácil',
-    category: '',
     image_url: ''
   });
 
@@ -49,7 +48,6 @@ export const RecipeManagement = ({ recipes, onDataChange }: RecipeManagementProp
       servings: 4,
       calories: 0,
       difficulty: 'Fácil',
-      category: '',
       image_url: ''
     });
     setEditingRecipe(null);
@@ -67,7 +65,6 @@ export const RecipeManagement = ({ recipes, onDataChange }: RecipeManagementProp
       servings: recipe.servings || 4,
       calories: recipe.calories || 0,
       difficulty: recipe.difficulty || 'Fácil',
-      category: recipe.category || '',
       image_url: recipe.image_url || ''
     });
     setEditingRecipe(recipe);
@@ -158,25 +155,14 @@ export const RecipeManagement = ({ recipes, onDataChange }: RecipeManagementProp
             </DialogHeader>
             
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="title">Título *</Label>
-                  <Input
-                    id="title"
-                    value={form.title}
-                    onChange={(e) => setForm({...form, title: e.target.value})}
-                    placeholder="Nome da receita"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="category">Categoria</Label>
-                  <Input
-                    id="category"
-                    value={form.category}
-                    onChange={(e) => setForm({...form, category: e.target.value})}
-                    placeholder="Ex: Pratos principais"
-                  />
-                </div>
+              <div>
+                <Label htmlFor="title">Título *</Label>
+                <Input
+                  id="title"
+                  value={form.title}
+                  onChange={(e) => setForm({...form, title: e.target.value})}
+                  placeholder="Nome da receita"
+                />
               </div>
 
               <div>
@@ -297,7 +283,7 @@ export const RecipeManagement = ({ recipes, onDataChange }: RecipeManagementProp
               <div className="flex justify-between items-start">
                 <div>
                   <CardTitle className="text-lg">{recipe.title}</CardTitle>
-                  <CardDescription>{recipe.category}</CardDescription>
+                  <CardDescription>{recipe.description}</CardDescription>
                 </div>
                 <Badge variant="secondary">{recipe.difficulty}</Badge>
               </div>

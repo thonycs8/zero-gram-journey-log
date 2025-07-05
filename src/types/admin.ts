@@ -9,7 +9,6 @@ export interface Recipe {
   servings: number;
   calories: number;
   difficulty: string;
-  category: string;
   image_url: string;
   created_at: string;
 }
@@ -88,7 +87,6 @@ export interface RecipeForm {
   servings: number;
   calories: number;
   difficulty: string;
-  category: string;
   image_url: string;
 }
 

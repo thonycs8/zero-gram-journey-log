@@ -134,6 +134,11 @@ const resources = {
         success: 'Sucesso'
       },
       
+      // Autenticação
+      auth: {
+        loginRegister: 'Entrar / Registar'
+      },
+
       // Footer
       footer: {
         ready: 'Pronto para começar a tua transformação?',
@@ -277,6 +282,11 @@ const resources = {
         loading: 'Loading...',
         error: 'Error',
         success: 'Success'
+      },
+      
+      // Authentication
+      auth: {
+        loginRegister: 'Login / Register'
       },
       
       // Footer
