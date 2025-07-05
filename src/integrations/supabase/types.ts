@@ -45,6 +45,122 @@ export type Database = {
         }
         Relationships: []
       }
+      meal_plan_items: {
+        Row: {
+          calories: number | null
+          created_at: string
+          day_number: number | null
+          food_item: string
+          id: string
+          meal_plan_id: string
+          meal_type: string
+          order_index: number | null
+          quantity: string | null
+        }
+        Insert: {
+          calories?: number | null
+          created_at?: string
+          day_number?: number | null
+          food_item: string
+          id?: string
+          meal_plan_id: string
+          meal_type: string
+          order_index?: number | null
+          quantity?: string | null
+        }
+        Update: {
+          calories?: number | null
+          created_at?: string
+          day_number?: number | null
+          food_item?: string
+          id?: string
+          meal_plan_id?: string
+          meal_type?: string
+          order_index?: number | null
+          quantity?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meal_plan_items_meal_plan_id_fkey"
+            columns: ["meal_plan_id"]
+            isOneToOne: false
+            referencedRelation: "meal_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meal_plans: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          duration_days: number | null
+          goal: string | null
+          id: string
+          image_url: string | null
+          title: string
+          total_calories: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration_days?: number | null
+          goal?: string | null
+          id?: string
+          image_url?: string | null
+          title: string
+          total_calories?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration_days?: number | null
+          goal?: string | null
+          id?: string
+          image_url?: string | null
+          title?: string
+          total_calories?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      page_content: {
+        Row: {
+          content: string
+          content_type: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          page_key: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          content_type: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          page_key: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          content_type?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          page_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -144,6 +260,92 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      workout_exercises: {
+        Row: {
+          created_at: string
+          day_of_week: number | null
+          exercise_name: string
+          id: string
+          notes: string | null
+          order_index: number | null
+          reps: string | null
+          rest_seconds: number | null
+          sets: number | null
+          workout_plan_id: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week?: number | null
+          exercise_name: string
+          id?: string
+          notes?: string | null
+          order_index?: number | null
+          reps?: string | null
+          rest_seconds?: number | null
+          sets?: number | null
+          workout_plan_id: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number | null
+          exercise_name?: string
+          id?: string
+          notes?: string | null
+          order_index?: number | null
+          reps?: string | null
+          rest_seconds?: number | null
+          sets?: number | null
+          workout_plan_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workout_exercises_workout_plan_id_fkey"
+            columns: ["workout_plan_id"]
+            isOneToOne: false
+            referencedRelation: "workout_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workout_plans: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          difficulty: string | null
+          duration_weeks: number | null
+          frequency: string | null
+          id: string
+          image_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          difficulty?: string | null
+          duration_weeks?: number | null
+          frequency?: string | null
+          id?: string
+          image_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          difficulty?: string | null
+          duration_weeks?: number | null
+          frequency?: string | null
+          id?: string
+          image_url?: string | null
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
