@@ -5,9 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { CreateMealPlanDialog } from '@/components/plans/CreateMealPlanDialog';
+import { CreateWorkoutPlanDialog } from '@/components/plans/CreateWorkoutPlanDialog';
 
 const Plans = () => {
   const { t } = useTranslation();
+  const [showMealPlanDialog, setShowMealPlanDialog] = useState(false);
+  const [showWorkoutPlanDialog, setShowWorkoutPlanDialog] = useState(false);
   
   const workoutPlans = [
     {
@@ -415,7 +419,6 @@ const Plans = () => {
   return (
     <div className="container max-w-7xl mx-auto px-4 py-8 space-y-8">
       
-      {/* Header */}
       <div className="text-center space-y-4 animate-fade-in">
         <h1 className="text-3xl font-bold text-foreground">{t('plans.title')}</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -423,7 +426,6 @@ const Plans = () => {
         </p>
       </div>
 
-      {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card className="gradient-secondary text-center">
           <CardContent className="pt-6">
@@ -458,7 +460,6 @@ const Plans = () => {
         </Card>
       </div>
 
-      {/* Main Tabs for Plan Types */}
       <Tabs defaultValue="alimentares" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-8">
           <TabsTrigger value="alimentares" className="text-base">
@@ -469,7 +470,6 @@ const Plans = () => {
           </TabsTrigger>
         </TabsList>
 
-        {/* Meal Plans Tab */}
         <TabsContent value="alimentares" className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {mealPlans.map((plan, index) => (
@@ -483,7 +483,6 @@ const Plans = () => {
             ))}
           </div>
 
-          {/* Meal Plans Call to Action */}
           <Card className="gradient-primary text-center">
             <CardContent className="pt-6">
               <div className="text-white space-y-4">
@@ -492,7 +491,11 @@ const Plans = () => {
                 <p className="text-white/90 max-w-md mx-auto">
                   {t('plans.createPersonalizedPlanDesc')}
                 </p>
-                <Button variant="secondary" className="mt-4">
+                <Button 
+                  variant="secondary" 
+                  className="mt-4"
+                  onClick={() => setShowMealPlanDialog(true)}
+                >
                   {t('plans.createPlan')}
                 </Button>
               </div>
@@ -500,7 +503,6 @@ const Plans = () => {
           </Card>
         </TabsContent>
 
-        {/* Workout Plans Tab */}
         <TabsContent value="treinos" className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {workoutPlans.map((plan, index) => (
@@ -514,7 +516,6 @@ const Plans = () => {
             ))}
           </div>
 
-          {/* Workout Plans Call to Action */}
           <Card className="gradient-primary text-center">
             <CardContent className="pt-6">
               <div className="text-white space-y-4">
@@ -523,7 +524,11 @@ const Plans = () => {
                 <p className="text-white/90 max-w-md mx-auto">
                   {t('plans.createPersonalizedWorkoutDesc')}
                 </p>
-                <Button variant="secondary" className="mt-4">
+                <Button 
+                  variant="secondary" 
+                  className="mt-4"
+                  onClick={() => setShowWorkoutPlanDialog(true)}
+                >
                   {t('plans.createWorkoutPlan')}
                 </Button>
               </div>
@@ -531,6 +536,15 @@ const Plans = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <CreateMealPlanDialog 
+        open={showMealPlanDialog} 
+        onOpenChange={setShowMealPlanDialog} 
+      />
+      <CreateWorkoutPlanDialog 
+        open={showWorkoutPlanDialog} 
+        onOpenChange={setShowWorkoutPlanDialog} 
+      />
     </div>
   );
 };
