@@ -14,16 +14,25 @@ export const RecipeDetailsDialog = ({ recipe }: RecipeDetailsDialogProps) => {
   return (
     <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto m-4">
       <DialogHeader className="mb-6">
-        <DialogTitle className="flex items-center gap-2 text-xl">
-          <span className="text-2xl">🍽️</span>
+        <DialogTitle className="flex items-center gap-2 text-2xl font-bold">
+          <span className="text-3xl">🍽️</span>
           {recipe.title}
         </DialogTitle>
-        <DialogDescription className="text-base">
-          {recipe.description}
-        </DialogDescription>
       </DialogHeader>
       
       <div className="space-y-6">
+        {/* Description Card */}
+        {recipe.description && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Descrição</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm leading-relaxed text-muted-foreground">{recipe.description}</p>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Recipe Info Card */}
         <Card>
           <CardHeader>
