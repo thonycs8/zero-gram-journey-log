@@ -163,7 +163,8 @@ const resources = {
         goals: 'Objetivos',
         preferences: 'Preferências',
         statistics: 'Estatísticas',
-        settings: 'Definições'
+        settings: 'Definições',
+        store: 'Loja'
       },
       
       // Botões comuns
@@ -359,7 +360,8 @@ const resources = {
         goals: 'Goals',
         preferences: 'Preferences',
         statistics: 'Statistics',
-        settings: 'Settings'
+        settings: 'Settings',
+        store: 'Store'
       },
       
       // Common buttons

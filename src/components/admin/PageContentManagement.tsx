@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import type { PageContent, PageContentForm } from '@/types/admin';
 import { useAuth } from '@/contexts/AuthContext';
+import React from 'react';
 
 interface PageContentManagementProps {
   pageContent: PageContent[];
@@ -31,6 +32,12 @@ export const PageContentManagement = ({ pageContent, onDataChange }: PageContent
     description: ''
   });
 
+  const [storeForm, setStoreForm] = useState({
+    url: '',
+    namePt: '',
+    nameEn: ''
+  });
+
   const resetForm = () => {
     setForm({
       page_key: '',
@@ -41,6 +48,22 @@ export const PageContentManagement = ({ pageContent, onDataChange }: PageContent
     setEditingPageContent(null);
     setShowDialog(false);
   };
+
+  const loadStoreConfig = () => {
+    const urlContent = pageContent.find(c => c.page_key === 'store_button_url');
+    const namePtContent = pageContent.find(c => c.page_key === 'store_button_name_pt');
+    const nameEnContent = pageContent.find(c => c.page_key === 'store_button_name_en');
+    
+    setStoreForm({
+      url: urlContent?.content || '',
+      namePt: namePtContent?.content || '',
+      nameEn: nameEnContent?.content || ''
+    });
+  };
+
+  React.useEffect(() => {
+    loadStoreConfig();
+  }, [pageContent]);
 
   const editPageContent = (content: PageContent) => {
     setForm({
@@ -110,6 +133,43 @@ export const PageContentManagement = ({ pageContent, onDataChange }: PageContent
       toast({
         title: "Erro",
         description: "Falha ao eliminar conteúdo",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleStoreConfigSave = async () => {
+    if (!storeForm.url || !storeForm.namePt || !storeForm.nameEn) {
+      toast({
+        title: "Erro",
+        description: "Todos os campos da loja são obrigatórios",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const updates = [
+        { page_key: 'store_button_url', content: storeForm.url },
+        { page_key: 'store_button_name_pt', content: storeForm.namePt },
+        { page_key: 'store_button_name_en', content: storeForm.nameEn }
+      ];
+
+      for (const update of updates) {
+        const { error } = await supabase
+          .from('page_content')
+          .update({ content: update.content, created_by: user?.id })
+          .eq('page_key', update.page_key);
+        
+        if (error) throw error;
+      }
+
+      toast({ title: "Sucesso", description: "Configurações da loja atualizadas!" });
+      onDataChange();
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao salvar configurações da loja",
         variant: "destructive"
       });
     }
@@ -194,6 +254,44 @@ export const PageContentManagement = ({ pageContent, onDataChange }: PageContent
             </div>
           </DialogContent>
         </Dialog>
+      </div>
+
+      {/* Store Configuration Section */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">
+        <h3 className="text-xl font-semibold mb-4 text-blue-800">⚙️ Configurações da Loja Online</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div>
+            <Label htmlFor="store-url">URL da Loja *</Label>
+            <Input
+              id="store-url"
+              value={storeForm.url}
+              onChange={(e) => setStoreForm({...storeForm, url: e.target.value})}
+              placeholder="https://sualore.com"
+            />
+          </div>
+          <div>
+            <Label htmlFor="store-name-pt">Nome do Botão (PT) *</Label>
+            <Input
+              id="store-name-pt"
+              value={storeForm.namePt}
+              onChange={(e) => setStoreForm({...storeForm, namePt: e.target.value})}
+              placeholder="Visitar Loja"
+            />
+          </div>
+          <div>
+            <Label htmlFor="store-name-en">Nome do Botão (EN) *</Label>
+            <Input
+              id="store-name-en"
+              value={storeForm.nameEn}
+              onChange={(e) => setStoreForm({...storeForm, nameEn: e.target.value})}
+              placeholder="Visit Store"
+            />
+          </div>
+        </div>
+        <Button onClick={handleStoreConfigSave} className="bg-blue-600 hover:bg-blue-700">
+          <Save className="mr-2 h-4 w-4" />
+          Guardar Configurações da Loja
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
