@@ -23,6 +23,7 @@ export interface Recipe {
   calories?: number | null;
   difficulty?: string | null;
   image_url?: string | null;
+  dica_zerogram?: string | null;
   created_by?: string | null;
   created_at: string;
   updated_at: string;

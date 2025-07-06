@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Recipe } from '@/types/admin';
 
 interface RecipeDetailsDialogProps {
@@ -11,68 +12,94 @@ export const RecipeDetailsDialog = ({ recipe }: RecipeDetailsDialogProps) => {
   const instructionsList = recipe.instructions.split('\n').filter(instruction => instruction.trim());
 
   return (
-    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-      <DialogHeader>
-        <DialogTitle className="flex items-center gap-2">
+    <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto m-4">
+      <DialogHeader className="mb-6">
+        <DialogTitle className="flex items-center gap-2 text-xl">
           <span className="text-2xl">🍽️</span>
           {recipe.title}
         </DialogTitle>
-        <DialogDescription>
+        <DialogDescription className="text-base">
           {recipe.description}
         </DialogDescription>
       </DialogHeader>
       
       <div className="space-y-6">
-        {/* Recipe Info */}
-        <div className="bg-muted/30 rounded-lg p-4">
-          <h4 className="font-semibold mb-3">Informações da Receita</h4>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="text-center">
-              <p className="font-bold text-primary">{recipe.calories || 'N/A'}</p>
-              <p className="text-xs text-muted-foreground">Calorias</p>
+        {/* Recipe Info Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Informações da Receita</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center p-3 bg-muted/30 rounded-lg">
+                <p className="font-bold text-primary text-lg">{recipe.calories || 'N/A'}</p>
+                <p className="text-sm text-muted-foreground">Calorias</p>
+              </div>
+              <div className="text-center p-3 bg-muted/30 rounded-lg">
+                <p className="font-bold text-foreground text-lg">{recipe.servings || 'N/A'}</p>
+                <p className="text-sm text-muted-foreground">Doses</p>
+              </div>
+              <div className="text-center p-3 bg-muted/30 rounded-lg">
+                <p className="font-bold text-foreground text-lg">{recipe.prep_time || 'N/A'} min</p>
+                <p className="text-sm text-muted-foreground">Preparação</p>
+              </div>
+              <div className="text-center p-3 bg-muted/30 rounded-lg">
+                <p className="font-bold text-foreground text-lg">{recipe.cook_time || 'N/A'} min</p>
+                <p className="text-sm text-muted-foreground">Cozedura</p>
+              </div>
             </div>
-            <div className="text-center">
-              <p className="font-bold text-foreground">{recipe.servings || 'N/A'}</p>
-              <p className="text-xs text-muted-foreground">Doses</p>
-            </div>
-            <div className="text-center">
-              <p className="font-bold text-foreground">{recipe.prep_time || 'N/A'} min</p>
-              <p className="text-xs text-muted-foreground">Preparação</p>
-            </div>
-            <div className="text-center">
-              <p className="font-bold text-foreground">{recipe.cook_time || 'N/A'} min</p>
-              <p className="text-xs text-muted-foreground">Cozedura</p>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        {/* Ingredients */}
-        <div>
-          <h4 className="font-semibold mb-3">{t('recipes.ingredients')}</h4>
-          <ul className="space-y-1">
-            {recipe.ingredients.map((ingredient, index) => (
-              <li key={index} className="flex items-center gap-2 text-sm">
-                <span className="w-2 h-2 bg-primary rounded-full"></span>
-                {ingredient}
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* Dica ZeroGram Card */}
+        {recipe.dica_zerogram && (
+          <Card className="border-primary/20">
+            <CardHeader>
+              <CardTitle className="text-lg text-primary flex items-center gap-2">
+                💡 Dica ZeroGram
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm leading-relaxed">{recipe.dica_zerogram}</p>
+            </CardContent>
+          </Card>
+        )}
 
-        {/* Instructions */}
-        <div>
-          <h4 className="font-semibold mb-3">{t('recipes.instructions')}</h4>
-          <ol className="space-y-2">
-            {instructionsList.map((instruction, index) => (
-              <li key={index} className="flex gap-3 text-sm">
-                <span className="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold">
-                  {index + 1}
-                </span>
-                {instruction}
-              </li>
-            ))}
-          </ol>
-        </div>
+        {/* Ingredients Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">{t('recipes.ingredients')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2">
+              {recipe.ingredients.map((ingredient, index) => (
+                <li key={index} className="flex items-center gap-3 text-sm p-2 bg-muted/20 rounded-md">
+                  <span className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></span>
+                  {ingredient}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+
+        {/* Instructions Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">{t('recipes.instructions')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ol className="space-y-3">
+              {instructionsList.map((instruction, index) => (
+                <li key={index} className="flex gap-4 p-3 bg-muted/20 rounded-md">
+                  <span className="flex-shrink-0 w-7 h-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">
+                    {index + 1}
+                  </span>
+                  <span className="text-sm leading-relaxed">{instruction}</span>
+                </li>
+              ))}
+            </ol>
+          </CardContent>
+        </Card>
       </div>
     </DialogContent>
   );
