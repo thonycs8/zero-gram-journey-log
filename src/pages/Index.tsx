@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import CalorieCalculator from '@/components/CalorieCalculator';
 import MotivationalBlog from '@/components/MotivationalBlog';
+import { AdBanner } from '@/components/ads/AdBanner';
+import { AdSquare } from '@/components/ads/AdSquare';
 
 const Index = () => {
   const { t } = useTranslation();
@@ -46,6 +48,9 @@ const Index = () => {
         <CalorieCalculator />
       </section>
 
+      {/* Banner Publicitário */}
+      <AdBanner size="large" />
+
       {/* Separador visual */}
       <div className="py-8">
         <div className="max-w-xs mx-auto">
@@ -57,6 +62,11 @@ const Index = () => {
       <section className="py-12 px-4">
         <MotivationalBlog />
       </section>
+
+      {/* Anúncio Quadrado */}
+      <div className="flex justify-center py-8">
+        <AdSquare size="large" />
+      </div>
 
       {/* Footer */}
       <footer className="py-12 px-4 mt-16">

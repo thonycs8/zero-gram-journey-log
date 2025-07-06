@@ -7,6 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { CreateMealPlanDialog } from '@/components/plans/CreateMealPlanDialog';
 import { CreateWorkoutPlanDialog } from '@/components/plans/CreateWorkoutPlanDialog';
+import { AdBanner } from '@/components/ads/AdBanner';
+import { AdSquare } from '@/components/ads/AdSquare';
 
 const Plans = () => {
   const { t } = useTranslation();
@@ -460,6 +462,9 @@ const Plans = () => {
         </Card>
       </div>
 
+      {/* Banner Publicitário */}
+      <AdBanner size="medium" />
+
       <Tabs defaultValue="alimentares" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-8">
           <TabsTrigger value="alimentares" className="text-base">
@@ -501,6 +506,11 @@ const Plans = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Anúncio Quadrado */}
+          <div className="flex justify-center">
+            <AdSquare size="large" />
+          </div>
         </TabsContent>
 
         <TabsContent value="treinos" className="space-y-8">
@@ -534,8 +544,16 @@ const Plans = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Anúncio Quadrado */}
+          <div className="flex justify-center">
+            <AdSquare size="large" />
+          </div>
         </TabsContent>
       </Tabs>
+
+      {/* Banner Final */}
+      <AdBanner size="large" />
 
       <CreateMealPlanDialog 
         open={showMealPlanDialog} 

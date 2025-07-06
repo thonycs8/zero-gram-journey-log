@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calculator, ArrowUp, ArrowDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { AdSidebar } from '@/components/ads/AdSidebar';
+import { AdBanner } from '@/components/ads/AdBanner';
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -33,7 +35,10 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="container max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <div className="container max-w-7xl mx-auto px-4 py-8">
+      <div className="flex gap-8">
+        {/* Conteúdo Principal */}
+        <div className="flex-1 space-y-8">
       
       {/* Header */}
       <div className="space-y-2 animate-fade-in">
@@ -193,6 +198,17 @@ const Dashboard = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Banner Publicitário */}
+      <AdBanner size="medium" />
+      
+        </div>
+
+        {/* Sidebar com Anúncios */}
+        <div className="hidden lg:block w-80">
+          <AdSidebar />
+        </div>
+      </div>
     </div>
   );
 };

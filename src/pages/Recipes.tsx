@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useRecipes } from '@/hooks/useRecipes';
 import { RecipeCard } from '@/components/recipes/RecipeCard';
+import { AdBanner } from '@/components/ads/AdBanner';
+import { AdSquare } from '@/components/ads/AdSquare';
 
 const Recipes = () => {
   const { t } = useTranslation();
@@ -37,6 +39,9 @@ const Recipes = () => {
         />
       </div>
 
+      {/* Banner Publicitário */}
+      <AdBanner size="medium" />
+
       {/* Recipes Grid */}
       {loading ? (
         <div className="flex items-center justify-center py-12">
@@ -62,16 +67,39 @@ const Recipes = () => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredRecipes.map((recipe, index) => (
-            <div 
-              key={recipe.id} 
-              className="animate-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <RecipeCard recipe={recipe} />
+        <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {filteredRecipes.slice(0, 6).map((recipe, index) => (
+              <div 
+                key={recipe.id} 
+                className="animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <RecipeCard recipe={recipe} />
+              </div>
+            ))}
+          </div>
+          
+          {/* Anúncio no meio das receitas */}
+          {filteredRecipes.length > 6 && (
+            <div className="flex justify-center mb-8">
+              <AdSquare size="large" />
             </div>
-          ))}
+          )}
+          
+          {filteredRecipes.length > 6 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredRecipes.slice(6).map((recipe, index) => (
+                <div 
+                  key={recipe.id} 
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${(index + 6) * 0.1}s` }}
+                >
+                  <RecipeCard recipe={recipe} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
