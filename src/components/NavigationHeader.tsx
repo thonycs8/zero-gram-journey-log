@@ -5,14 +5,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calculator, Menu, User, LogOut, Settings } from 'lucide-react';
+import { Calculator, Menu, User, LogOut, Settings, ExternalLink } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { useStoreConfig } from '@/hooks/useStoreConfig';
 
 const NavigationHeader = () => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const { user, isAdmin, signOut, loading } = useAuth();
+  const { storeConfig, loading: storeLoading } = useStoreConfig();
 
   const navigationItems = [
     { path: '/', label: t('nav.home') },
@@ -69,6 +71,19 @@ const NavigationHeader = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
           <NavLinks />
+          
+          {/* Store Button */}
+          {!storeLoading && storeConfig.url && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => window.open(storeConfig.url, '_blank')}
+              className="gap-2"
+            >
+              <ExternalLink className="h-4 w-4" />
+              {i18n.language === 'pt' ? storeConfig.namePt : storeConfig.nameEn}
+            </Button>
+          )}
         </nav>
 
         {/* Language Selector & Auth */}
@@ -145,6 +160,22 @@ const NavigationHeader = () => {
                 </div>
                 <nav className="flex flex-col">
                   <NavLinks mobile={true} />
+                  
+                  {/* Mobile Store Button */}
+                  {!storeLoading && storeConfig.url && (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        window.open(storeConfig.url, '_blank');
+                        setIsOpen(false);
+                      }}
+                      className="gap-2 mt-4 mx-4"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      {i18n.language === 'pt' ? storeConfig.namePt : storeConfig.nameEn}
+                    </Button>
+                  )}
                 </nav>
                 
                 {/* Mobile Auth */}

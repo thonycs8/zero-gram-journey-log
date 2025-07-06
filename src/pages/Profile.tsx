@@ -9,12 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { ExternalLink } from 'lucide-react';
-import { useStoreConfig } from '@/hooks/useStoreConfig';
 
 const Profile = () => {
-  const { t, i18n } = useTranslation();
-  const { storeConfig, loading: storeLoading } = useStoreConfig();
+  const { t } = useTranslation();
   
   const [profileData, setProfileData] = useState({
     name: 'Maria Silva',
@@ -74,25 +71,13 @@ const Profile = () => {
         </div>
         <h1 className="text-3xl font-bold text-foreground">{profileData.name}</h1>
         <p className="text-lg text-muted-foreground">Membro desde Outubro 2024</p>
-        
-        {!storeLoading && storeConfig.url && (
-          <Button 
-            variant="outline" 
-            className="mt-4 gap-2"
-            onClick={() => window.open(storeConfig.url, '_blank')}
-          >
-            <ExternalLink className="h-4 w-4" />
-            {i18n.language === 'pt' ? storeConfig.namePt : storeConfig.nameEn}
-          </Button>
-        )}
       </div>
 
       <Tabs defaultValue="personal" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="personal">Pessoal</TabsTrigger>
           <TabsTrigger value="goals">Objectivos</TabsTrigger>
           <TabsTrigger value="stats">Estatísticas</TabsTrigger>
-          <TabsTrigger value="store">{t('profile.store')}</TabsTrigger>
           <TabsTrigger value="settings">Definições</TabsTrigger>
         </TabsList>
 
@@ -341,31 +326,6 @@ const Profile = () => {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
-
-        {/* Store Tab */}
-        <TabsContent value="store" className="space-y-6">
-          <Card className="glass-effect text-center">
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="text-4xl mb-4">🏪</div>
-                <h2 className="text-2xl font-bold">Nossa Loja Online</h2>
-                <p className="text-muted-foreground">
-                  Descobre produtos especiais selecionados para te ajudar na tua jornada saudável
-                </p>
-                {!storeLoading && storeConfig.url && (
-                  <Button 
-                    size="lg" 
-                    className="mt-6 gap-2"
-                    onClick={() => window.open(storeConfig.url, '_blank')}
-                  >
-                    <ExternalLink className="h-5 w-5" />
-                    {i18n.language === 'pt' ? storeConfig.namePt : storeConfig.nameEn}
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
 
         {/* Settings */}
