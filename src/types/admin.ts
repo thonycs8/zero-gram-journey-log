@@ -128,6 +128,7 @@ export interface RecipeForm {
   calories: number;
   difficulty: string;
   image_url: string;
+  dica_zerogram: string;
 }
 
 export interface PostForm {

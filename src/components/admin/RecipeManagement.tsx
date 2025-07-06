@@ -34,7 +34,8 @@ export const RecipeManagement = ({ recipes, onDataChange }: RecipeManagementProp
     servings: 4,
     calories: 0,
     difficulty: 'Fácil',
-    image_url: ''
+    image_url: '',
+    dica_zerogram: ''
   });
 
   const resetForm = () => {
@@ -48,7 +49,8 @@ export const RecipeManagement = ({ recipes, onDataChange }: RecipeManagementProp
       servings: 4,
       calories: 0,
       difficulty: 'Fácil',
-      image_url: ''
+      image_url: '',
+      dica_zerogram: ''
     });
     setEditingRecipe(null);
     setShowDialog(false);
@@ -65,7 +67,8 @@ export const RecipeManagement = ({ recipes, onDataChange }: RecipeManagementProp
       servings: recipe.servings || 4,
       calories: recipe.calories || 0,
       difficulty: recipe.difficulty || 'Fácil',
-      image_url: recipe.image_url || ''
+      image_url: recipe.image_url || '',
+      dica_zerogram: recipe.dica_zerogram || ''
     });
     setEditingRecipe(recipe);
     setShowDialog(true);
@@ -259,6 +262,17 @@ export const RecipeManagement = ({ recipes, onDataChange }: RecipeManagementProp
                     placeholder="https://..."
                   />
                 </div>
+              </div>
+
+              <div>
+                <Label htmlFor="dica_zerogram">Dica ZeroGram</Label>
+                <Textarea
+                  id="dica_zerogram"
+                  value={form.dica_zerogram}
+                  onChange={(e) => setForm({...form, dica_zerogram: e.target.value})}
+                  placeholder="Dica especial da ZeroGram para esta receita..."
+                  rows={3}
+                />
               </div>
 
               <div className="flex justify-end space-x-2">
