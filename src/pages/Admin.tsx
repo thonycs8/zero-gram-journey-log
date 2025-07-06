@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAdminData } from '@/hooks/useAdminData';
 import { AdminStats } from '@/components/admin/AdminStats';
-import { RecipeManagement } from '@/components/admin/RecipeManagement';
+import { RecipeManagement } from '@/components/admin/recipes/RecipeManagement';
 import { BlogManagement } from '@/components/admin/BlogManagement';
 import { WorkoutManagement } from '@/components/admin/WorkoutManagement';
 import { MealPlanManagement } from '@/components/admin/MealPlanManagement';
