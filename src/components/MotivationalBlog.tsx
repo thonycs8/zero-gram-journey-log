@@ -167,18 +167,39 @@ const MotivationalBlog = () => {
                   {new Date(selectedPost.created_at).toLocaleDateString('pt-BR')}
                 </DialogDescription>
               </DialogHeader>
-              <div className="mt-4">
+              <div className="mt-4 space-y-4">
                 {selectedPost.image_url && (
-                  <img 
-                    src={selectedPost.image_url} 
-                    alt={selectedPost.title}
-                    className="w-full h-48 object-cover rounded-lg mb-4"
-                  />
+                  <div className="relative overflow-hidden rounded-lg">
+                    <img 
+                      src={selectedPost.image_url} 
+                      alt={selectedPost.title}
+                      className="w-full h-64 object-cover"
+                    />
+                  </div>
                 )}
-                <div className="prose prose-sm max-w-none">
-                  <p className="whitespace-pre-wrap text-foreground leading-relaxed">
-                    {selectedPost.content}
-                  </p>
+                
+                <Card className="border-none shadow-none bg-muted/30">
+                  <CardContent className="p-6">
+                    <div className="prose prose-sm max-w-none">
+                      <div className="text-foreground leading-relaxed space-y-4">
+                        {selectedPost.content.split('\n\n').map((paragraph: string, index: number) => (
+                          <p key={index} className="text-sm leading-relaxed">
+                            {paragraph}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <div className="flex items-center justify-between pt-4 border-t border-border">
+                  <Badge variant="secondary" className="text-xs">
+                    Publicado em {new Date(selectedPost.created_at).toLocaleDateString('pt-BR', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </Badge>
                 </div>
               </div>
             </>
