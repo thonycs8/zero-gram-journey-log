@@ -9,9 +9,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const Profile = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   
   const [profileData, setProfileData] = useState({
     name: 'Maria Silva',
@@ -56,9 +62,50 @@ const Profile = () => {
     weightLoss: 2.5
   };
 
-  const handleSave = () => {
-    console.log('Dados guardados:', profileData);
-    // Aqui implementar lógica de guardar
+  const handleSave = async () => {
+    if (!user) {
+      toast({
+        title: "Erro",
+        description: "Precisa estar autenticado para guardar os dados.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          user_id: user.id,
+          display_name: profileData.name,
+          email: profileData.email,
+          age: parseInt(profileData.age) || null,
+          height: parseInt(profileData.height) || null,
+          weight: parseFloat(profileData.weight) || null,
+          gender: profileData.gender,
+          activity_level: profileData.activityLevel,
+          goal: profileData.goal,
+          bio: profileData.bio,
+          notifications: profileData.notifications,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso!",
+        description: "Os seus dados foram guardados com sucesso.",
+      });
+    } catch (error) {
+      console.error('Erro ao guardar perfil:', error);
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro ao guardar os dados. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -159,8 +206,8 @@ const Profile = () => {
                 />
               </div>
 
-              <Button onClick={handleSave} className="w-full md:w-auto">
-                Guardar Alterações
+              <Button onClick={handleSave} disabled={isLoading} className="w-full md:w-auto">
+                {isLoading ? "A guardar..." : "Guardar Alterações"}
               </Button>
             </CardContent>
           </Card>
