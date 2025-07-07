@@ -24,9 +24,9 @@ const Profile = () => {
   const [profileData, setProfileData] = useState({
     display_name: '',
     email: '',
-    age: '',
-    height: '',
-    weight: '',
+    age: 0,
+    height: 0,
+    weight: 0,
     gender: 'female',
     activity_level: 'moderate',
     goal: 'maintain',
@@ -43,7 +43,7 @@ const Profile = () => {
     currentWeight: 0,
     targetWeight: 0,
     weeklyGoal: 0.5,
-    calories: 0,
+    calories: 2000,
     water: 2.5,
     exercise: 4
   });
@@ -55,7 +55,9 @@ const Profile = () => {
     plansCreated: 0,
     daysActive: 0,
     averageCalories: 0,
-    weightLoss: 0
+    weightLoss: 0,
+    level: 1,
+    totalPoints: 0
   });
 
   // Carrega dados do perfil
@@ -143,7 +145,9 @@ const Profile = () => {
       <ProfileHeader 
         name={profileData.display_name} 
         email={profileData.email} 
-        joinDate={user?.created_at} 
+        joinDate={user?.created_at}
+        level={stats.level || 1}
+        totalPoints={stats.totalPoints || 0}
       />
 
       <Tabs defaultValue="personal" className="w-full">

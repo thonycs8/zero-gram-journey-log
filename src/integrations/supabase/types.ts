@@ -9,6 +9,51 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          is_active: boolean | null
+          points: number
+          requirement_field: string | null
+          requirement_type: string
+          requirement_value: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          icon: string
+          id?: string
+          is_active?: boolean | null
+          points?: number
+          requirement_field?: string | null
+          requirement_type: string
+          requirement_value: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          is_active?: boolean | null
+          points?: number
+          requirement_field?: string | null
+          requirement_type?: string
+          requirement_value?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           content: string
@@ -422,6 +467,80 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          is_completed: boolean | null
+          progress: number | null
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          is_completed?: boolean | null
+          progress?: number | null
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          is_completed?: boolean | null
+          progress?: number | null
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_goals: {
+        Row: {
+          created_at: string
+          current_weight: number | null
+          daily_calories: number | null
+          daily_water: number | null
+          id: string
+          target_weight: number | null
+          updated_at: string
+          user_id: string
+          weekly_exercise: number | null
+          weekly_goal: number | null
+        }
+        Insert: {
+          created_at?: string
+          current_weight?: number | null
+          daily_calories?: number | null
+          daily_water?: number | null
+          id?: string
+          target_weight?: number | null
+          updated_at?: string
+          user_id: string
+          weekly_exercise?: number | null
+          weekly_goal?: number | null
+        }
+        Update: {
+          created_at?: string
+          current_weight?: number | null
+          daily_calories?: number | null
+          daily_water?: number | null
+          id?: string
+          target_weight?: number | null
+          updated_at?: string
+          user_id?: string
+          weekly_exercise?: number | null
+          weekly_goal?: number | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -439,6 +558,54 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_stats: {
+        Row: {
+          created_at: string
+          current_streak: number | null
+          days_active: number | null
+          id: string
+          last_activity_date: string | null
+          level: number | null
+          longest_streak: number | null
+          plans_created: number | null
+          recipes_viewed: number | null
+          total_calculations: number | null
+          total_points: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_streak?: number | null
+          days_active?: number | null
+          id?: string
+          last_activity_date?: string | null
+          level?: number | null
+          longest_streak?: number | null
+          plans_created?: number | null
+          recipes_viewed?: number | null
+          total_calculations?: number | null
+          total_points?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_streak?: number | null
+          days_active?: number | null
+          id?: string
+          last_activity_date?: string | null
+          level?: number | null
+          longest_streak?: number | null
+          plans_created?: number | null
+          recipes_viewed?: number | null
+          total_calculations?: number | null
+          total_points?: number | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
