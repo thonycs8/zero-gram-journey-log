@@ -80,7 +80,16 @@ const Profile = () => {
 
         // Carrega objetivos
         const userGoals = await ProfileService.getGoals(user.id);
-        if (userGoals) setGoals(userGoals);
+        if (userGoals) {
+          setGoals({
+            currentWeight: userGoals.currentWeight || 0,
+            targetWeight: userGoals.targetWeight || 0,
+            weeklyGoal: userGoals.weeklyGoal || 0.5,
+            calories: userGoals.calories || 2000,
+            water: userGoals.water || 2.5,
+            exercise: userGoals.exercise || 4
+          });
+        }
 
         // Carrega conquistas
         const userAchievements = await ProfileService.getAchievements(user.id);
@@ -88,7 +97,18 @@ const Profile = () => {
 
         // Carrega estatísticas
         const userStats = await ProfileService.getStats(user.id);
-        if (userStats) setStats(userStats);
+        if (userStats) {
+          setStats({
+            totalCalculations: userStats.totalCalculations || 0,
+            recipesViewed: userStats.recipesViewed || 0,
+            plansCreated: userStats.plansCreated || 0,
+            daysActive: userStats.daysActive || 0,
+            averageCalories: userStats.averageCalories || 0,
+            weightLoss: userStats.weightLoss || 0,
+            level: userStats.level || 1,
+            totalPoints: userStats.totalPoints || 0
+          });
+        }
 
       } catch (error) {
         console.error('Error loading profile data:', error);
@@ -125,7 +145,14 @@ const Profile = () => {
       setLoading(true);
       const updatedGoals = await ProfileService.updateGoals(user.id, goals);
       if (updatedGoals) {
-        setGoals(updatedGoals);
+        setGoals({
+          currentWeight: updatedGoals.currentWeight || 0,
+          targetWeight: updatedGoals.targetWeight || 0,
+          weeklyGoal: updatedGoals.weeklyGoal || 0.5,
+          calories: updatedGoals.calories || 2000,
+          water: updatedGoals.water || 2.5,
+          exercise: updatedGoals.exercise || 4
+        });
         // Mostrar toast de sucesso
       }
     } catch (error) {
