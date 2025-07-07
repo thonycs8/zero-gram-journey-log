@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Loader2 } from 'lucide-react';
 import { useMotivationalQuote } from '@/hooks/useMotivationalQuote';
@@ -11,6 +13,8 @@ const MotivationalBlog = () => {
   const { t } = useTranslation();
   const { quote, loading: quoteLoading, refreshQuote } = useMotivationalQuote();
   const { posts, loading: postsLoading, error } = useBlogPosts();
+  const [selectedPost, setSelectedPost] = useState<any>(null);
+  
   return (
     <div className="w-full max-w-6xl mx-auto space-y-8">
       {/* Header */}
@@ -105,7 +109,10 @@ const MotivationalBlog = () => {
                   }
                 </p>
                 <div className="mt-4 pt-4 border-t border-border">
-                  <span className="text-xs text-primary font-medium hover:underline cursor-pointer">
+                  <span 
+                    className="text-xs text-primary font-medium hover:underline cursor-pointer"
+                    onClick={() => setSelectedPost(post)}
+                  >
                     {t('blog.readMore')}
                   </span>
                 </div>
@@ -146,6 +153,38 @@ const MotivationalBlog = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Dialog para mostrar post completo */}
+      <Dialog open={!!selectedPost} onOpenChange={() => setSelectedPost(null)}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          {selectedPost && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-xl font-semibold">
+                  {selectedPost.title}
+                </DialogTitle>
+                <DialogDescription className="text-sm">
+                  {new Date(selectedPost.created_at).toLocaleDateString('pt-BR')}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="mt-4">
+                {selectedPost.image_url && (
+                  <img 
+                    src={selectedPost.image_url} 
+                    alt={selectedPost.title}
+                    className="w-full h-48 object-cover rounded-lg mb-4"
+                  />
+                )}
+                <div className="prose prose-sm max-w-none">
+                  <p className="whitespace-pre-wrap text-foreground leading-relaxed">
+                    {selectedPost.content}
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
