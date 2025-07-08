@@ -9,6 +9,7 @@ import { CreateMealPlanDialog } from '@/components/plans/CreateMealPlanDialog';
 import { CreateWorkoutPlanDialog } from '@/components/plans/CreateWorkoutPlanDialog';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { AdSquare } from '@/components/ads/AdSquare';
+import PremiumCard from '@/components/PremiumCard';
 
 const Plans = () => {
   const { t } = useTranslation();
@@ -460,6 +461,13 @@ const Plans = () => {
             <p className="text-sm text-muted-foreground">{t('plans.personalizationDesc')}</p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Cartão Premium */}
+      <div className="flex justify-center mb-8">
+        <div className="w-full max-w-md">
+          <PremiumCard />
+        </div>
       </div>
 
       {/* Banner Publicitário */}
