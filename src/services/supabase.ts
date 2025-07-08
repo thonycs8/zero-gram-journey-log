@@ -67,13 +67,42 @@ export const ProfileService = {
       console.error('Error fetching profile:', error);
       return null;
     }
-    return data;
+    
+    if (!data) return null;
+    
+    // Convert string fields to numbers where needed
+    return {
+      display_name: data.display_name,
+      email: data.email,
+      age: data.age ? Number(data.age) : undefined,
+      height: data.height ? Number(data.height) : undefined,
+      weight: data.weight ? Number(data.weight) : undefined,
+      gender: data.gender,
+      activity_level: data.activity_level,
+      goal: data.goal,
+      bio: data.bio,
+      notifications: data.notifications
+    };
   },
 
   async updateProfile(userId: string, profileData: ProfileData): Promise<ProfileData | null> {
+    // Convert the data to match database schema
+    const dbData = {
+      display_name: profileData.display_name,
+      email: profileData.email,
+      age: profileData.age,
+      height: profileData.height,
+      weight: profileData.weight,
+      gender: profileData.gender,
+      activity_level: profileData.activity_level,
+      goal: profileData.goal,
+      bio: profileData.bio,
+      notifications: profileData.notifications
+    };
+
     const { data, error } = await supabase
       .from('profiles')
-      .update(profileData)
+      .update(dbData)
       .eq('user_id', userId)
       .select()
       .single();
@@ -82,7 +111,22 @@ export const ProfileService = {
       console.error('Error updating profile:', error);
       return null;
     }
-    return data;
+    
+    if (!data) return null;
+    
+    // Convert back to ProfileData format
+    return {
+      display_name: data.display_name,
+      email: data.email,
+      age: data.age ? Number(data.age) : undefined,
+      height: data.height ? Number(data.height) : undefined,
+      weight: data.weight ? Number(data.weight) : undefined,
+      gender: data.gender,
+      activity_level: data.activity_level,
+      goal: data.goal,
+      bio: data.bio,
+      notifications: data.notifications
+    };
   },
 
   async getGoals(userId: string): Promise<UserGoals | null> {
