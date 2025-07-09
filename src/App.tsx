@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Recipes from "./pages/Recipes";
 import Plans from "./pages/Plans";
+import VIP from "./pages/VIP";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
@@ -39,6 +40,7 @@ const App = () => (
             } />
             <Route path="/receitas" element={<Recipes />} />
             <Route path="/planos" element={<Plans />} />
+            <Route path="/vip" element={<VIP />} />
             <Route path="/blog" element={<div className="py-8"><MotivationalBlog /></div>} />
             <Route path="/perfil" element={
               <ProtectedRoute>
