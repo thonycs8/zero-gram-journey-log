@@ -22,7 +22,7 @@ const NavigationHeader = () => {
     { path: '/calculadora', label: t('nav.calculator') },
     { path: '/painel', label: t('nav.dashboard') },
     { path: '/receitas', label: t('nav.recipes') },
-    { path: '/planos', label: t('nav.plans') },
+    { path: '/planos', label: 'VIP' },
     { path: '/blog', label: t('nav.blog') },
     ...(isAdmin ? [{ path: '/admin', label: 'Admin' }] : []),
     ...(isPremium ? [{ path: '/criar', label: 'Criar Conteúdo' }] : []),
