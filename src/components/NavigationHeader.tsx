@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
+import { Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -13,7 +14,7 @@ const NavigationHeader = () => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const { user, isAdmin, signOut, loading } = useAuth();
+  const { user, isAdmin, isPremium, signOut, loading } = useAuth();
   const { storeConfig, loading: storeLoading } = useStoreConfig();
 
   const navigationItems = [
@@ -24,6 +25,7 @@ const NavigationHeader = () => {
     { path: '/planos', label: t('nav.plans') },
     { path: '/blog', label: t('nav.blog') },
     ...(isAdmin ? [{ path: '/admin', label: 'Admin' }] : []),
+    ...(isPremium ? [{ path: '/criar', label: 'Criar Conteúdo' }] : []),
     { path: '/perfil', label: t('nav.profile') }
   ];
 
@@ -124,6 +126,14 @@ const NavigationHeader = () => {
                     <Link to="/admin" className="flex items-center">
                       <Settings className="mr-2 h-4 w-4" />
                       Admin
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                {isPremium && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/criar" className="flex items-center">
+                      <Crown className="mr-2 h-4 w-4" />
+                      Criar Conteúdo
                     </Link>
                   </DropdownMenuItem>
                 )}

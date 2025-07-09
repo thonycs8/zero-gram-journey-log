@@ -13,6 +13,7 @@ import Plans from "./pages/Plans";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
+import PremiumAdmin from "./pages/PremiumAdmin";
 import CalorieCalculator from "./components/CalorieCalculator";
 import MotivationalBlog from "./components/MotivationalBlog";
 import NotFound from "./pages/NotFound";
@@ -47,6 +48,11 @@ const App = () => (
             <Route path="/admin" element={
               <ProtectedRoute requireAdmin={true}>
                 <Admin />
+              </ProtectedRoute>
+            } />
+            <Route path="/criar" element={
+              <ProtectedRoute requirePremium={true}>
+                <PremiumAdmin />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />

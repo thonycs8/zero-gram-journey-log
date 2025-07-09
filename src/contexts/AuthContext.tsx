@@ -7,6 +7,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   isAdmin: boolean;
+  isPremium: boolean;
   signUp: (email: string, password: string, displayName?: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -35,6 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
 
   const checkAdminRole = async (userId: string) => {
     try {
@@ -55,6 +57,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const checkPremiumStatus = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('subscribers')
+        .select('subscribed')
+        .eq('user_id', userId)
+        .eq('subscribed', true)
+        .single();
+      
+      if (!error && data) {
+        setIsPremium(true);
+      } else {
+        setIsPremium(false);
+      }
+    } catch (err) {
+      setIsPremium(false);
+    }
+  };
+
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -66,9 +87,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Defer admin check to prevent deadlocks
           setTimeout(() => {
             checkAdminRole(session.user.id);
+            checkPremiumStatus(session.user.id);
           }, 0);
         } else {
           setIsAdmin(false);
+          setIsPremium(false);
         }
         
         setLoading(false);
@@ -83,6 +106,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (session?.user) {
         setTimeout(() => {
           checkAdminRole(session.user.id);
+          checkPremiumStatus(session.user.id);
         }, 0);
       }
       
@@ -164,6 +188,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     session,
     loading,
     isAdmin,
+    isPremium,
     signUp,
     signIn,
     signOut,
