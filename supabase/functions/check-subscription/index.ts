@@ -80,12 +80,33 @@ serve(async (req) => {
     const hasActiveSub = subscriptions.data.length > 0;
     let subscriptionTier = null;
     let subscriptionEnd = null;
+    let currency = 'EUR';
+    let amount = null;
 
     if (hasActiveSub) {
       const subscription = subscriptions.data[0];
       subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
-      subscriptionTier = "Premium";
-      logStep("Active subscription found", { subscriptionId: subscription.id, endDate: subscriptionEnd });
+      
+      // Get price information
+      const priceId = subscription.items.data[0].price.id;
+      const price = await stripe.prices.retrieve(priceId);
+      amount = price.unit_amount || 0;
+      currency = (price.currency || 'eur').toUpperCase();
+      
+      // Determine subscription tier based on amount and currency
+      if ((currency === 'EUR' && amount <= 399) || (currency === 'BRL' && amount <= 1299)) {
+        subscriptionTier = "Basic";
+      } else {
+        subscriptionTier = "Premium";
+      }
+      
+      logStep("Active subscription found", { 
+        subscriptionId: subscription.id, 
+        endDate: subscriptionEnd, 
+        tier: subscriptionTier,
+        amount,
+        currency
+      });
     } else {
       logStep("No active subscription found");
     }
@@ -97,6 +118,8 @@ serve(async (req) => {
       subscribed: hasActiveSub,
       subscription_tier: subscriptionTier,
       subscription_end: subscriptionEnd,
+      currency: currency,
+      amount: amount,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'email' });
 

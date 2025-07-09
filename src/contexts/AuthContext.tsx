@@ -61,13 +61,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const { data, error } = await supabase
         .from('subscribers')
-        .select('subscribed')
+        .select('subscribed, subscription_tier')
         .eq('user_id', userId)
         .eq('subscribed', true)
         .single();
       
       if (!error && data) {
-        setIsPremium(true);
+        setIsPremium(data.subscription_tier === 'Basic' || data.subscription_tier === 'Premium');
       } else {
         setIsPremium(false);
       }

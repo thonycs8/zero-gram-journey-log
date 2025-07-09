@@ -43,7 +43,7 @@ export const useSubscription = () => {
     }
   }, [user]);
 
-  const createCheckout = async () => {
+  const createCheckout = async (plan: 'basic' | 'premium' = 'basic', currency: 'eur' | 'brl' = 'eur') => {
     if (!user) {
       toast({
         title: "Erro",
@@ -55,7 +55,9 @@ export const useSubscription = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-checkout');
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { plan, currency }
+      });
       
       if (error) {
         console.error('Error creating checkout:', error);
@@ -120,5 +122,6 @@ export const useSubscription = () => {
     createCheckout,
     manageSubscription,
     isPremium: subscription.subscribed,
+    isBasic: subscription.subscribed && subscription.subscription_tier === 'Basic',
   };
 };

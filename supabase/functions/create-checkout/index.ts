@@ -42,6 +42,28 @@ serve(async (req) => {
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     
+    // Get plan details from request body
+    const { plan = 'basic', currency = 'eur' } = await req.json();
+    
+    // Define plan pricing
+    const plans = {
+      basic: {
+        eur: { amount: 299, name: 'Plano Basic - ZeroGram', description: 'Receitas e treinos personalizados' }, // 2.99€
+        brl: { amount: 999, name: 'Plano Basic - ZeroGram', description: 'Receitas e treinos personalizados' } // R$ 9.99
+      },
+      premium: {
+        eur: { amount: 999, name: 'Plano Premium - ZeroGram', description: 'Análise avançada, coaching e sem anúncios' }, // 9.99€
+        brl: { amount: 2990, name: 'Plano Premium - ZeroGram', description: 'Análise avançada, coaching e sem anúncios' } // R$ 29.90
+      }
+    };
+
+    const selectedPlan = plans[plan]?.[currency];
+    if (!selectedPlan) {
+      throw new Error("Invalid plan or currency");
+    }
+
+    logStep("Plan selected", { plan, currency, amount: selectedPlan.amount });
+    
     // Check if customer already exists
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     let customerId;
@@ -58,20 +80,24 @@ serve(async (req) => {
       line_items: [
         {
           price_data: {
-            currency: "brl",
+            currency: currency,
             product_data: { 
-              name: "Plano Premium - ZeroGram",
-              description: "Análise avançada, planos personalizados, sessões com coaches e sem anúncios"
+              name: selectedPlan.name,
+              description: selectedPlan.description
             },
-            unit_amount: 1990, // R$19,90 in centavos
+            unit_amount: selectedPlan.amount,
             recurring: { interval: "month" },
           },
           quantity: 1,
         },
       ],
       mode: "subscription",
-      success_url: `${req.headers.get("origin")}/painel?subscription=success`,
+      success_url: `${req.headers.get("origin")}/planos?subscription=success&plan=${plan}`,
       cancel_url: `${req.headers.get("origin")}/planos?subscription=cancelled`,
+      metadata: {
+        plan: plan,
+        currency: currency
+      }
     });
 
     logStep("Checkout session created", { sessionId: session.id, url: session.url });

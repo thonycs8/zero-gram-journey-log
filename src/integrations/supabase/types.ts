@@ -417,7 +417,9 @@ export type Database = {
       }
       subscribers: {
         Row: {
+          amount: number | null
           created_at: string
+          currency: string | null
           email: string
           id: string
           stripe_customer_id: string | null
@@ -428,7 +430,9 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          amount?: number | null
           created_at?: string
+          currency?: string | null
           email: string
           id?: string
           stripe_customer_id?: string | null
@@ -439,7 +443,9 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          amount?: number | null
           created_at?: string
+          currency?: string | null
           email?: string
           id?: string
           stripe_customer_id?: string | null

@@ -72,7 +72,7 @@ const PremiumCard = () => {
           </div>
         ) : (
           <Button 
-            onClick={createCheckout}
+            onClick={() => createCheckout('premium', 'eur')}
             disabled={loading}
             className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
           >
