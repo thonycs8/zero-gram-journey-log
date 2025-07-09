@@ -8,9 +8,11 @@ import { Calculator, ArrowUp, ArrowDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AdSidebar } from '@/components/ads/AdSidebar';
 import { AdBanner } from '@/components/ads/AdBanner';
+import { useAds } from '@/hooks/useAds';
 
 const Dashboard = () => {
   const { t } = useTranslation();
+  const { shouldShowAds } = useAds();
   const [progress] = useState(68); // Progresso semanal simulado
 
   const stats = {
@@ -200,14 +202,16 @@ const Dashboard = () => {
       </Card>
 
       {/* Banner Publicitário */}
-      <AdBanner size="medium" />
+      {shouldShowAds && <AdBanner size="medium" />}
       
         </div>
 
         {/* Sidebar com Anúncios */}
-        <div className="hidden lg:block w-80">
-          <AdSidebar />
-        </div>
+        {shouldShowAds && (
+          <div className="hidden lg:block w-80">
+            <AdSidebar />
+          </div>
+        )}
       </div>
     </div>
   );

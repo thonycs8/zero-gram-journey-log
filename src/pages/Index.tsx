@@ -5,9 +5,12 @@ import CalorieCalculator from '@/components/CalorieCalculator';
 import MotivationalBlog from '@/components/MotivationalBlog';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { AdSquare } from '@/components/ads/AdSquare';
+import { useAds } from '@/hooks/useAds';
 
 const Index = () => {
   const { t } = useTranslation();
+  const { shouldShowAds } = useAds();
+  
   return (
     <div className="min-h-screen">
       {/* Header/Hero Section */}
@@ -49,7 +52,7 @@ const Index = () => {
       </section>
 
       {/* Banner Publicitário */}
-      <AdBanner size="large" />
+      {shouldShowAds && <AdBanner size="large" />}
 
       {/* Separador visual */}
       <div className="py-8">
@@ -64,9 +67,11 @@ const Index = () => {
       </section>
 
       {/* Anúncio Quadrado */}
-      <div className="flex justify-center py-8">
-        <AdSquare size="large" />
-      </div>
+      {shouldShowAds && (
+        <div className="flex justify-center py-8">
+          <AdSquare size="large" />
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="py-12 px-4 mt-16">

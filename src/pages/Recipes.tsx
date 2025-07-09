@@ -7,9 +7,11 @@ import { useRecipes } from '@/hooks/useRecipes';
 import { RecipeCard } from '@/components/recipes/RecipeCard';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { AdSquare } from '@/components/ads/AdSquare';
+import { useAds } from '@/hooks/useAds';
 
 const Recipes = () => {
   const { t } = useTranslation();
+  const { shouldShowAds } = useAds();
   const [searchTerm, setSearchTerm] = useState('');
   const { recipes, loading, error } = useRecipes();
 
@@ -40,7 +42,7 @@ const Recipes = () => {
       </div>
 
       {/* Banner Publicitário */}
-      <AdBanner size="medium" />
+      {shouldShowAds && <AdBanner size="medium" />}
 
       {/* Recipes Grid */}
       {loading ? (
@@ -81,7 +83,7 @@ const Recipes = () => {
           </div>
           
           {/* Anúncio no meio das receitas */}
-          {filteredRecipes.length > 6 && (
+          {filteredRecipes.length > 6 && shouldShowAds && (
             <div className="flex justify-center mb-8">
               <AdSquare size="large" />
             </div>

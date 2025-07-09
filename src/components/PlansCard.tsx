@@ -24,17 +24,17 @@ const PlansCard = () => {
   const basicFeatures = [
     "Receitas personalizadas ilimitadas",
     "Treinos personalizados",
-    "Publicar no blog da comunidade",
-    "Salvar conteúdo pessoal"
+    "Publicar no blog da comunidade", 
+    "Salvar conteúdo pessoal",
+    "Sem anúncios"
   ];
 
   const premiumFeatures = [
     "Todas as funcionalidades do Basic",
-    "Análise de nutrição avançada (scanner de rótulos)",
-    "Planos de dieta personalizados por IA",
-    "Sessões com coaches certificados",
-    "Sem anúncios",
-    "Suporte prioritário"
+    "Análise de nutrição avançada",
+    "Planos de dieta personalizados",
+    "Sessões com coaches (parceria com nutricionistas)",
+    "10% de desconto na loja"
   ];
 
   const handleCreateCheckout = (plan: 'basic' | 'premium') => {
