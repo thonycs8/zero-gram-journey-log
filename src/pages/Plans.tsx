@@ -29,10 +29,10 @@ const Plans = () => {
       <div className="container max-w-7xl mx-auto px-4 py-16 space-y-12">
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold tracking-tight">
-            Escolha Seu <span className="gradient-primary bg-clip-text text-transparent">Plano</span>
+            Planos <span className="gradient-primary bg-clip-text text-transparent">VIP</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Desbloqueie todo o potencial do ZeroGram com nossos planos de assinatura
+            Desbloqueie todo o potencial do ZeroGram com nossos planos VIP
           </p>
         </div>
 
