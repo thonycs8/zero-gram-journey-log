@@ -7,9 +7,13 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Dumbbell, Apple, Clock, Target, Users, TrendingUp, Zap } from 'lucide-react';
 import { CreateWorkoutPlanDialog } from '@/components/plans/CreateWorkoutPlanDialog';
 import { CreateMealPlanDialog } from '@/components/plans/CreateMealPlanDialog';
+import { useAds } from '@/hooks/useAds';
+import { AdBanner } from '@/components/ads/AdBanner';
+import { AdSquare } from '@/components/ads/AdSquare';
 
 const Plans = () => {
   const { t } = useTranslation();
+  const { shouldShowAds } = useAds();
   const [workoutDialogOpen, setWorkoutDialogOpen] = useState(false);
   const [mealDialogOpen, setMealDialogOpen] = useState(false);
 
@@ -150,6 +154,11 @@ const Plans = () => {
           </Card>
         </div>
 
+        {/* Ad Banner between sections */}
+        {shouldShowAds && (
+          <AdBanner size="large" className="my-8" />
+        )}
+
         {/* Workout Plans Section */}
         <div className="space-y-8">
           <div className="text-center space-y-4">
@@ -163,48 +172,62 @@ const Plans = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {workoutPlans.map((plan) => (
-              <Card key={plan.id} className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-l-4 border-l-primary/20 hover:border-l-primary">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className={`w-12 h-12 bg-gradient-to-br ${plan.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                      <span className="text-white text-xl">{plan.icon}</span>
-                    </div>
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{plan.title}</CardTitle>
-                      <Badge variant="secondary" className="text-xs mt-1">
-                        {plan.difficulty}
-                      </Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">{plan.description}</p>
-                  
-                  <div className="space-y-2">
-                    {plan.features.map((feature, index) => (
-                      <div key={index} className="flex items-center gap-2 text-sm">
-                        <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
-                        <span>{feature}</span>
+            {workoutPlans.map((plan, index) => (
+              <div key={plan.id} className="flex flex-col">
+                <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-l-4 border-l-primary/20 hover:border-l-primary flex-1">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`w-12 h-12 bg-gradient-to-br ${plan.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                        <span className="text-white text-xl">{plan.icon}</span>
                       </div>
-                    ))}
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-sm pt-4 border-t">
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span>{plan.duration}</span>
+                      <div className="flex-1">
+                        <CardTitle className="text-lg">{plan.title}</CardTitle>
+                        <Badge variant="secondary" className="text-xs mt-1">
+                          {plan.difficulty}
+                        </Badge>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Target className="h-4 w-4 text-muted-foreground" />
-                      <span>{plan.frequency}</span>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground">{plan.description}</p>
+                    
+                    <div className="space-y-2">
+                      {plan.features.map((feature, featureIndex) => (
+                        <div key={featureIndex} className="flex items-center gap-2 text-sm">
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                          <span>{feature}</span>
+                        </div>
+                      ))}
                     </div>
+                    
+                    <div className="flex items-center justify-between text-sm pt-4 border-t">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <span>{plan.duration}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Target className="h-4 w-4 text-muted-foreground" />
+                        <span>{plan.frequency}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                {/* Ad Square between specific cards */}
+                {shouldShowAds && index === 1 && (
+                  <div className="mt-6">
+                    <AdSquare size="medium" />
                   </div>
-                </CardContent>
-              </Card>
+                )}
+              </div>
             ))}
           </div>
         </div>
+
+        {/* Ad Banner between workout and meal sections */}
+        {shouldShowAds && (
+          <AdBanner size="medium" className="my-8" />
+        )}
 
         {/* Meal Plans Section */}
         <div className="space-y-8">
@@ -219,48 +242,62 @@ const Plans = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {mealPlans.map((plan) => (
-              <Card key={plan.id} className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-l-4 border-l-green-200 hover:border-l-green-500">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className={`w-12 h-12 bg-gradient-to-br ${plan.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                      <span className="text-white text-xl">{plan.icon}</span>
-                    </div>
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{plan.title}</CardTitle>
-                      <Badge variant="secondary" className="text-xs mt-1">
-                        {plan.goal}
-                      </Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">{plan.description}</p>
-                  
-                  <div className="space-y-2">
-                    {plan.features.map((feature, index) => (
-                      <div key={index} className="flex items-center gap-2 text-sm">
-                        <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                        <span>{feature}</span>
+            {mealPlans.map((plan, index) => (
+              <div key={plan.id} className="flex flex-col">
+                <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-l-4 border-l-green-200 hover:border-l-green-500 flex-1">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`w-12 h-12 bg-gradient-to-br ${plan.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                        <span className="text-white text-xl">{plan.icon}</span>
                       </div>
-                    ))}
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-sm pt-4 border-t">
-                    <div className="flex items-center gap-1">
-                      <Target className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium text-green-600">{plan.calories}</span>
+                      <div className="flex-1">
+                        <CardTitle className="text-lg">{plan.title}</CardTitle>
+                        <Badge variant="secondary" className="text-xs mt-1">
+                          {plan.goal}
+                        </Badge>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span>{plan.duration}</span>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground">{plan.description}</p>
+                    
+                    <div className="space-y-2">
+                      {plan.features.map((feature, featureIndex) => (
+                        <div key={featureIndex} className="flex items-center gap-2 text-sm">
+                          <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                          <span>{feature}</span>
+                        </div>
+                      ))}
                     </div>
+                    
+                    <div className="flex items-center justify-between text-sm pt-4 border-t">
+                      <div className="flex items-center gap-1">
+                        <Target className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium text-green-600">{plan.calories}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <span>{plan.duration}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                {/* Ad Square after second meal plan */}
+                {shouldShowAds && index === 1 && (
+                  <div className="mt-6">
+                    <AdSquare size="small" />
                   </div>
-                </CardContent>
-              </Card>
+                )}
+              </div>
             ))}
           </div>
         </div>
+
+        {/* Final Ad Banner */}
+        {shouldShowAds && (
+          <AdBanner size="medium" className="mt-12" />
+        )}
 
         {/* Dialogs */}
         <CreateWorkoutPlanDialog 
