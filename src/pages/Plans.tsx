@@ -8,6 +8,8 @@ import { Plus, Dumbbell, Apple, Clock, Target, Users, TrendingUp, Zap } from 'lu
 import { CreateWorkoutPlanDialog } from '@/components/plans/CreateWorkoutPlanDialog';
 import { CreateMealPlanDialog } from '@/components/plans/CreateMealPlanDialog';
 import { DietDetailsDialog } from '@/components/plans/DietDetailsDialog';
+import { WorkoutDetailsDialog } from '@/components/plans/WorkoutDetailsDialog';
+import { MealPlanDetailsDialog } from '@/components/plans/MealPlanDetailsDialog';
 import { useAds } from '@/hooks/useAds';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { AdSquare } from '@/components/ads/AdSquare';
@@ -50,10 +52,24 @@ const Plans = () => {
   const [mealDialogOpen, setMealDialogOpen] = useState(false);
   const [selectedDiet, setSelectedDiet] = useState<typeof dietTypes[0] | null>(null);
   const [dietDialogOpen, setDietDialogOpen] = useState(false);
+  const [selectedWorkout, setSelectedWorkout] = useState<typeof workoutPlans[0] | null>(null);
+  const [workoutDetailsDialogOpen, setWorkoutDetailsDialogOpen] = useState(false);
+  const [selectedMealPlan, setSelectedMealPlan] = useState<typeof mealPlans[0] | null>(null);
+  const [mealPlanDetailsDialogOpen, setMealPlanDetailsDialogOpen] = useState(false);
 
   const handleDietClick = (diet: typeof dietTypes[0]) => {
     setSelectedDiet(diet);
     setDietDialogOpen(true);
+  };
+
+  const handleWorkoutClick = (workout: typeof workoutPlans[0]) => {
+    setSelectedWorkout(workout);
+    setWorkoutDetailsDialogOpen(true);
+  };
+
+  const handleMealPlanClick = (mealPlan: typeof mealPlans[0]) => {
+    setSelectedMealPlan(mealPlan);
+    setMealPlanDetailsDialogOpen(true);
   };
 
   const workoutPlans = [
@@ -214,7 +230,10 @@ const Plans = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {workoutPlans.map((plan, index) => (
               <div key={plan.id} className="flex flex-col">
-                <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-l-4 border-l-primary/20 hover:border-l-primary flex-1">
+                <Card 
+                  className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-l-4 border-l-primary/20 hover:border-l-primary flex-1"
+                  onClick={() => handleWorkoutClick(plan)}
+                >
                   <CardHeader className="pb-4">
                     <div className="flex items-center gap-3 mb-3">
                       <div className={`w-12 h-12 bg-gradient-to-br ${plan.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
@@ -284,7 +303,10 @@ const Plans = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {mealPlans.map((plan, index) => (
               <div key={plan.id} className="flex flex-col">
-                <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-l-4 border-l-green-200 hover:border-l-green-500 flex-1">
+                <Card 
+                  className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-l-4 border-l-green-200 hover:border-l-green-500 flex-1"
+                  onClick={() => handleMealPlanClick(plan)}
+                >
                   <CardHeader className="pb-4">
                     <div className="flex items-center gap-3 mb-3">
                       <div className={`w-12 h-12 bg-gradient-to-br ${plan.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
@@ -419,6 +441,16 @@ const Plans = () => {
           diet={selectedDiet}
           open={dietDialogOpen} 
           onOpenChange={setDietDialogOpen} 
+        />
+        <WorkoutDetailsDialog 
+          workout={selectedWorkout}
+          open={workoutDetailsDialogOpen} 
+          onOpenChange={setWorkoutDetailsDialogOpen} 
+        />
+        <MealPlanDetailsDialog 
+          mealPlan={selectedMealPlan}
+          open={mealPlanDetailsDialogOpen} 
+          onOpenChange={setMealPlanDetailsDialogOpen} 
         />
       </div>
     </div>
