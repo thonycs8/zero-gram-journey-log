@@ -16,6 +16,8 @@ import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import PremiumAdmin from "./pages/PremiumAdmin";
 import Help from "./pages/Help";
+import Workouts from "./pages/Workouts";
+import Nutrition from "./pages/Nutrition";
 import CalorieCalculator from "./components/CalorieCalculator";
 import MotivationalBlog from "./components/MotivationalBlog";
 import NotFound from "./pages/NotFound";
@@ -56,6 +58,16 @@ const App = () => (
             <Route path="/criar" element={
               <ProtectedRoute requirePremium={true}>
                 <PremiumAdmin />
+              </ProtectedRoute>
+            } />
+            <Route path="/treinos" element={
+              <ProtectedRoute>
+                <Workouts />
+              </ProtectedRoute>
+            } />
+            <Route path="/alimentacao" element={
+              <ProtectedRoute>
+                <Nutrition />
               </ProtectedRoute>
             } />
             <Route path="/ajuda" element={<Help />} />

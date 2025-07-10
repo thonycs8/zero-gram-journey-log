@@ -23,6 +23,8 @@ const NavigationHeader = () => {
     { path: '/painel', label: t('nav.dashboard') },
     { path: '/receitas', label: t('nav.recipes') },
     { path: '/planos', label: t('nav.plans') },
+    { path: '/treinos', label: 'Treinos' },
+    { path: '/alimentacao', label: 'Alimentação' },
     { path: '/vip', label: 'VIP' },
     { path: '/blog', label: t('nav.blog') },
     ...(isAdmin ? [{ path: '/admin', label: 'Admin' }] : []),
