@@ -89,6 +89,36 @@ const Plans = () => {
     }
   ];
 
+  const dietTypes = [
+    {
+      id: 1,
+      title: "Dieta Proteica",
+      description: "Rica em proteínas para ganho de massa muscular e saciedade",
+      icon: "🥩",
+      color: "from-red-400 to-red-600",
+      features: ["Alto teor proteico", "Baixo carboidrato", "Saciedade prolongada"],
+      macros: "40% Proteína, 30% Gordura, 30% Carboidrato"
+    },
+    {
+      id: 2,
+      title: "Dieta Mediterrânea",
+      description: "Baseada nos padrões alimentares tradicionais do Mediterrâneo",
+      icon: "🫒",
+      color: "from-blue-400 to-blue-600",
+      features: ["Rico em azeite", "Peixes e frutos do mar", "Frutas e vegetais"],
+      macros: "15% Proteína, 35% Gordura, 50% Carboidrato"
+    },
+    {
+      id: 3,
+      title: "Dieta Vegana",
+      description: "100% baseada em plantas, rica em fibras e nutrientes",
+      icon: "🌱",
+      color: "from-green-400 to-green-600",
+      features: ["Base em plantas", "Rica em fibras", "Sustentável"],
+      macros: "15% Proteína, 25% Gordura, 60% Carboidrato"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container max-w-7xl mx-auto px-4 py-16 space-y-12">
@@ -284,6 +314,70 @@ const Plans = () => {
                 </Card>
                 
                 {/* Ad Square after second meal plan */}
+                {shouldShowAds && index === 1 && (
+                  <div className="mt-6">
+                    <AdSquare size="small" />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Ad Banner between sections */}
+        {shouldShowAds && (
+          <AdBanner size="medium" className="my-8" />
+        )}
+
+        {/* Diet Types Section */}
+        <div className="space-y-8">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl font-bold tracking-tight flex items-center justify-center gap-3">
+              <Apple className="h-8 w-8 text-purple-600" />
+              Tipos de <span className="bg-gradient-to-r from-purple-600 to-purple-500 bg-clip-text text-transparent">Dieta</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Escolha o tipo de alimentação que melhor se adapta ao seu estilo de vida
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {dietTypes.map((diet, index) => (
+              <div key={diet.id} className="flex flex-col">
+                <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-l-4 border-l-purple-200 hover:border-l-purple-500 flex-1">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`w-12 h-12 bg-gradient-to-br ${diet.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                        <span className="text-white text-xl">{diet.icon}</span>
+                      </div>
+                      <div className="flex-1">
+                        <CardTitle className="text-lg">{diet.title}</CardTitle>
+                        <Badge variant="outline" className="text-xs mt-1 border-purple-200 text-purple-700">
+                          Especializada
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground">{diet.description}</p>
+                    
+                    <div className="space-y-2">
+                      {diet.features.map((feature, featureIndex) => (
+                        <div key={featureIndex} className="flex items-center gap-2 text-sm">
+                          <div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="pt-4 border-t">
+                      <div className="text-xs text-muted-foreground font-medium mb-1">Distribuição de Macros:</div>
+                      <div className="text-sm font-medium text-purple-600">{diet.macros}</div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                {/* Ad Square after second diet type */}
                 {shouldShowAds && index === 1 && (
                   <div className="mt-6">
                     <AdSquare size="small" />
