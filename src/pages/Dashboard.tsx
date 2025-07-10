@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { AdSidebar } from '@/components/ads/AdSidebar';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { useAds } from '@/hooks/useAds';
+import { useDashboardData } from '@/hooks/useDashboardData';
 import { GamificationDashboard } from '@/components/gamification/GamificationDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -16,28 +17,40 @@ const Dashboard = () => {
   const { t } = useTranslation();
   const { shouldShowAds } = useAds();
   const { user } = useAuth();
-  const [progress] = useState(68); // Progresso semanal simulado
+  const { 
+    userStats, 
+    userGoals, 
+    recentActivities, 
+    loading,
+    getWeeklyProgress,
+    getAverageDailyCalories,
+    getTodaysCalories
+  } = useDashboardData();
 
-  const stats = {
-    todaysCalories: 1850,
-    goalCalories: 2100,
-    totalCalculations: 12,
-    averageCalories: 1920,
-    weekProgress: progress
-  };
-
-  const recentActivities = [
-    { type: 'calculation', date: 'Hoje', calories: 1850, goal: 'Manter peso' },
-    { type: 'recipe', date: 'Ontem', name: 'Salmão grelhado', calories: 450 },
-    { type: 'plan', date: '2 dias', name: 'Plano Semanal', status: 'Criado' },
-    { type: 'calculation', date: '3 dias', calories: 1920, goal: 'Perder peso' }
-  ];
+  const todaysCalories = getTodaysCalories();
+  const weekProgress = getWeeklyProgress();
+  const averageCalories = getAverageDailyCalories();
 
   const quickActions = [
     { title: t('dashboard.newCalculation'), path: '/calculadora', icon: Calculator, color: 'gradient-primary' },
-    { title: t('dashboard.viewHistory'), path: '/historico', icon: ArrowUp, color: 'gradient-secondary' },
-    { title: t('dashboard.updateGoals'), path: '/metas', icon: ArrowDown, color: 'bg-accent' }
+    { title: 'Ver Receitas', path: '/receitas', icon: ArrowUp, color: 'gradient-secondary' },
+    { title: 'Meu Perfil', path: '/perfil', icon: Target, color: 'bg-accent' }
   ];
+
+  if (loading) {
+    return (
+      <div className="container max-w-7xl mx-auto px-4 py-8">
+        <div className="animate-pulse space-y-8">
+          <div className="h-20 bg-muted rounded-lg"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-32 bg-muted rounded-lg"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container max-w-7xl mx-auto px-4 py-8">
@@ -64,11 +77,11 @@ const Dashboard = () => {
           <CardContent>
             <div className="space-y-2">
               <div className="text-2xl font-bold text-foreground">
-                {stats.todaysCalories}/{stats.goalCalories}
+                {todaysCalories.current}/{todaysCalories.goal}
               </div>
-              <Progress value={(stats.todaysCalories / stats.goalCalories) * 100} className="h-2" />
+              <Progress value={(todaysCalories.current / todaysCalories.goal) * 100} className="h-2" />
               <p className="text-xs text-muted-foreground">
-                {stats.goalCalories - stats.todaysCalories} calorias restantes
+                {todaysCalories.goal - todaysCalories.current} calorias restantes
               </p>
             </div>
           </CardContent>
@@ -83,10 +96,10 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <div className="text-2xl font-bold text-primary">{stats.weekProgress}%</div>
-              <Progress value={stats.weekProgress} className="h-2" />
+              <div className="text-2xl font-bold text-primary">{weekProgress}%</div>
+              <Progress value={weekProgress} className="h-2" />
               <p className="text-xs text-muted-foreground">
-                5 de 7 dias completos
+                {Math.round(weekProgress / 100 * 7)} de 7 dias completos
               </p>
             </div>
           </CardContent>
@@ -100,7 +113,7 @@ const Dashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">{stats.totalCalculations}</div>
+            <div className="text-2xl font-bold text-foreground">{userStats?.total_calculations || 0}</div>
             <p className="text-xs text-muted-foreground">
               Este mês
             </p>
@@ -115,7 +128,7 @@ const Dashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">{stats.averageCalories}</div>
+            <div className="text-2xl font-bold text-foreground">{averageCalories}</div>
             <p className="text-xs text-muted-foreground">
               Média semanal
             </p>
