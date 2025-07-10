@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Dumbbell, Apple, Clock, Target, Users, TrendingUp, Zap } from 'lucide-react';
 import { CreateWorkoutPlanDialog } from '@/components/plans/CreateWorkoutPlanDialog';
 import { CreateMealPlanDialog } from '@/components/plans/CreateMealPlanDialog';
+import { DietDetailsDialog } from '@/components/plans/DietDetailsDialog';
 import { useAds } from '@/hooks/useAds';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { AdSquare } from '@/components/ads/AdSquare';
@@ -14,8 +15,46 @@ import { AdSquare } from '@/components/ads/AdSquare';
 const Plans = () => {
   const { t } = useTranslation();
   const { shouldShowAds } = useAds();
+
+  const dietTypes = [
+    {
+      id: 1,
+      title: "Dieta Proteica",
+      description: "Rica em proteínas para ganho de massa muscular e saciedade",
+      icon: "🥩",
+      color: "from-red-400 to-red-600",
+      features: ["Alto teor proteico", "Baixo carboidrato", "Saciedade prolongada"],
+      macros: "40% Proteína, 30% Gordura, 30% Carboidrato"
+    },
+    {
+      id: 2,
+      title: "Dieta Mediterrânea",
+      description: "Baseada nos padrões alimentares tradicionais do Mediterrâneo",
+      icon: "🫒",
+      color: "from-blue-400 to-blue-600",
+      features: ["Rico em azeite", "Peixes e frutos do mar", "Frutas e vegetais"],
+      macros: "15% Proteína, 35% Gordura, 50% Carboidrato"
+    },
+    {
+      id: 3,
+      title: "Dieta Vegana",
+      description: "100% baseada em plantas, rica em fibras e nutrientes",
+      icon: "🌱",
+      color: "from-green-400 to-green-600",
+      features: ["Base em plantas", "Rica em fibras", "Sustentável"],
+      macros: "15% Proteína, 25% Gordura, 60% Carboidrato"
+    }
+  ];
+
   const [workoutDialogOpen, setWorkoutDialogOpen] = useState(false);
   const [mealDialogOpen, setMealDialogOpen] = useState(false);
+  const [selectedDiet, setSelectedDiet] = useState<typeof dietTypes[0] | null>(null);
+  const [dietDialogOpen, setDietDialogOpen] = useState(false);
+
+  const handleDietClick = (diet: typeof dietTypes[0]) => {
+    setSelectedDiet(diet);
+    setDietDialogOpen(true);
+  };
 
   const workoutPlans = [
     {
@@ -89,35 +128,6 @@ const Plans = () => {
     }
   ];
 
-  const dietTypes = [
-    {
-      id: 1,
-      title: "Dieta Proteica",
-      description: "Rica em proteínas para ganho de massa muscular e saciedade",
-      icon: "🥩",
-      color: "from-red-400 to-red-600",
-      features: ["Alto teor proteico", "Baixo carboidrato", "Saciedade prolongada"],
-      macros: "40% Proteína, 30% Gordura, 30% Carboidrato"
-    },
-    {
-      id: 2,
-      title: "Dieta Mediterrânea",
-      description: "Baseada nos padrões alimentares tradicionais do Mediterrâneo",
-      icon: "🫒",
-      color: "from-blue-400 to-blue-600",
-      features: ["Rico em azeite", "Peixes e frutos do mar", "Frutas e vegetais"],
-      macros: "15% Proteína, 35% Gordura, 50% Carboidrato"
-    },
-    {
-      id: 3,
-      title: "Dieta Vegana",
-      description: "100% baseada em plantas, rica em fibras e nutrientes",
-      icon: "🌱",
-      color: "from-green-400 to-green-600",
-      features: ["Base em plantas", "Rica em fibras", "Sustentável"],
-      macros: "15% Proteína, 25% Gordura, 60% Carboidrato"
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -344,7 +354,10 @@ const Plans = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {dietTypes.map((diet, index) => (
               <div key={diet.id} className="flex flex-col">
-                <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-l-4 border-l-purple-200 hover:border-l-purple-500 flex-1">
+                <Card 
+                  className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-l-4 border-l-purple-200 hover:border-l-purple-500 flex-1"
+                  onClick={() => handleDietClick(diet)}
+                >
                   <CardHeader className="pb-4">
                     <div className="flex items-center gap-3 mb-3">
                       <div className={`w-12 h-12 bg-gradient-to-br ${diet.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
@@ -401,6 +414,11 @@ const Plans = () => {
         <CreateMealPlanDialog 
           open={mealDialogOpen} 
           onOpenChange={setMealDialogOpen} 
+        />
+        <DietDetailsDialog 
+          diet={selectedDiet}
+          open={dietDialogOpen} 
+          onOpenChange={setDietDialogOpen} 
         />
       </div>
     </div>
