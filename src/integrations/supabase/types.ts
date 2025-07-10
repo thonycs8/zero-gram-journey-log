@@ -95,6 +95,186 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_nutrition_goals: {
+        Row: {
+          consumed_calories: number
+          consumed_carbs: number | null
+          consumed_fat: number | null
+          consumed_protein: number | null
+          created_at: string
+          goal_date: string
+          id: string
+          is_completed: boolean
+          meals_completed: number
+          points_earned: number
+          target_calories: number
+          target_carbs: number | null
+          target_fat: number | null
+          target_protein: number | null
+          total_meals: number
+          updated_at: string
+          user_id: string
+          water_consumed: number
+          water_target: number
+        }
+        Insert: {
+          consumed_calories?: number
+          consumed_carbs?: number | null
+          consumed_fat?: number | null
+          consumed_protein?: number | null
+          created_at?: string
+          goal_date?: string
+          id?: string
+          is_completed?: boolean
+          meals_completed?: number
+          points_earned?: number
+          target_calories?: number
+          target_carbs?: number | null
+          target_fat?: number | null
+          target_protein?: number | null
+          total_meals?: number
+          updated_at?: string
+          user_id: string
+          water_consumed?: number
+          water_target?: number
+        }
+        Update: {
+          consumed_calories?: number
+          consumed_carbs?: number | null
+          consumed_fat?: number | null
+          consumed_protein?: number | null
+          created_at?: string
+          goal_date?: string
+          id?: string
+          is_completed?: boolean
+          meals_completed?: number
+          points_earned?: number
+          target_calories?: number
+          target_carbs?: number | null
+          target_fat?: number | null
+          target_protein?: number | null
+          total_meals?: number
+          updated_at?: string
+          user_id?: string
+          water_consumed?: number
+          water_target?: number
+        }
+        Relationships: []
+      }
+      exercise_checkpoints: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          exercise_id: string
+          exercise_name: string
+          id: string
+          is_completed: boolean
+          notes: string | null
+          points_earned: number
+          reps_completed: string | null
+          sets_completed: number
+          total_sets: number
+          updated_at: string
+          user_id: string
+          user_plan_id: string
+          weight_used: number | null
+          workout_date: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          exercise_id: string
+          exercise_name: string
+          id?: string
+          is_completed?: boolean
+          notes?: string | null
+          points_earned?: number
+          reps_completed?: string | null
+          sets_completed?: number
+          total_sets: number
+          updated_at?: string
+          user_id: string
+          user_plan_id: string
+          weight_used?: number | null
+          workout_date?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          exercise_id?: string
+          exercise_name?: string
+          id?: string
+          is_completed?: boolean
+          notes?: string | null
+          points_earned?: number
+          reps_completed?: string | null
+          sets_completed?: number
+          total_sets?: number
+          updated_at?: string
+          user_id?: string
+          user_plan_id?: string
+          weight_used?: number | null
+          workout_date?: string
+        }
+        Relationships: []
+      }
+      meal_checkpoints: {
+        Row: {
+          calories_consumed: number | null
+          completed_at: string | null
+          created_at: string
+          food_item: string
+          id: string
+          is_completed: boolean
+          meal_date: string
+          meal_item_id: string
+          meal_type: string
+          notes: string | null
+          photo_url: string | null
+          points_earned: number
+          quantity_consumed: string | null
+          updated_at: string
+          user_id: string
+          user_plan_id: string
+        }
+        Insert: {
+          calories_consumed?: number | null
+          completed_at?: string | null
+          created_at?: string
+          food_item: string
+          id?: string
+          is_completed?: boolean
+          meal_date?: string
+          meal_item_id: string
+          meal_type: string
+          notes?: string | null
+          photo_url?: string | null
+          points_earned?: number
+          quantity_consumed?: string | null
+          updated_at?: string
+          user_id: string
+          user_plan_id: string
+        }
+        Update: {
+          calories_consumed?: number | null
+          completed_at?: string | null
+          created_at?: string
+          food_item?: string
+          id?: string
+          is_completed?: boolean
+          meal_date?: string
+          meal_item_id?: string
+          meal_type?: string
+          notes?: string | null
+          photo_url?: string | null
+          points_earned?: number
+          quantity_consumed?: string | null
+          updated_at?: string
+          user_id?: string
+          user_plan_id?: string
+        }
+        Relationships: []
+      }
       meal_plan_items: {
         Row: {
           calories: number | null
@@ -659,6 +839,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_meal_schedule: {
+        Row: {
+          created_at: string
+          day_of_week: number
+          id: string
+          is_active: boolean
+          meal_plan_id: string
+          meal_type: string
+          scheduled_time: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: number
+          id?: string
+          is_active?: boolean
+          meal_plan_id: string
+          meal_type: string
+          scheduled_time?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number
+          id?: string
+          is_active?: boolean
+          meal_plan_id?: string
+          meal_type?: string
+          scheduled_time?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_plans: {
         Row: {
           created_at: string
@@ -770,6 +986,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_workout_schedule: {
+        Row: {
+          created_at: string
+          day_of_week: number
+          id: string
+          is_active: boolean
+          scheduled_time: string | null
+          updated_at: string
+          user_id: string
+          workout_plan_id: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: number
+          id?: string
+          is_active?: boolean
+          scheduled_time?: string | null
+          updated_at?: string
+          user_id: string
+          workout_plan_id: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number
+          id?: string
+          is_active?: boolean
+          scheduled_time?: string | null
+          updated_at?: string
+          user_id?: string
+          workout_plan_id?: string
+        }
+        Relationships: []
+      }
       workout_exercises: {
         Row: {
           created_at: string
@@ -853,6 +1102,63 @@ export type Database = {
           image_url?: string | null
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      workout_sessions: {
+        Row: {
+          calories_burned: number | null
+          completed_at: string | null
+          completed_exercises: number
+          created_at: string
+          id: string
+          is_completed: boolean
+          points_earned: number
+          session_name: string
+          started_at: string | null
+          total_duration_minutes: number | null
+          total_exercises: number
+          updated_at: string
+          user_id: string
+          user_plan_id: string
+          workout_date: string
+          workout_plan_id: string
+        }
+        Insert: {
+          calories_burned?: number | null
+          completed_at?: string | null
+          completed_exercises?: number
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          points_earned?: number
+          session_name: string
+          started_at?: string | null
+          total_duration_minutes?: number | null
+          total_exercises?: number
+          updated_at?: string
+          user_id: string
+          user_plan_id: string
+          workout_date?: string
+          workout_plan_id: string
+        }
+        Update: {
+          calories_burned?: number | null
+          completed_at?: string | null
+          completed_exercises?: number
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          points_earned?: number
+          session_name?: string
+          started_at?: string | null
+          total_duration_minutes?: number | null
+          total_exercises?: number
+          updated_at?: string
+          user_id?: string
+          user_plan_id?: string
+          workout_date?: string
+          workout_plan_id?: string
         }
         Relationships: []
       }
