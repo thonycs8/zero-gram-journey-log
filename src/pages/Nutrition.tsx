@@ -3,8 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useGamification } from '@/hooks/useGamification';
-import { CheckCircle, Calendar, Target, Apple, Clock, Trophy, Plus } from 'lucide-react';
+import { useDetailedPlans } from '@/hooks/useDetailedPlans';
+import { CheckCircle, Calendar, Target, Apple, Clock, Trophy, Plus, Utensils, Zap } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -12,11 +15,19 @@ const Nutrition = () => {
   const { 
     userPlans, 
     checkpoints, 
-    loading, 
+    loading: gamificationLoading, 
     completeCheckpoint, 
     getTodaysCheckpoints,
     getPlanProgress 
   } = useGamification();
+
+  const {
+    getMealsForDay,
+    getMealPlan,
+    loading: plansLoading
+  } = useDetailedPlans();
+
+  const [completedMeals, setCompletedMeals] = useState<{ [key: string]: boolean }>({});
 
   const nutritionPlans = userPlans.filter(plan => plan.plan_type === 'meal' || plan.plan_type === 'diet');
   const activePlans = nutritionPlans.filter(plan => !plan.is_completed);
@@ -27,7 +38,39 @@ const Nutrition = () => {
     await completeCheckpoint(planId, 'Plano alimentar seguido hoje');
   };
 
-  if (loading) {
+  const handleMealToggle = (mealId: string) => {
+    setCompletedMeals(prev => ({
+      ...prev,
+      [mealId]: !prev[mealId]
+    }));
+  };
+
+  const getMealTypeIcon = (mealType: string) => {
+    switch (mealType.toLowerCase()) {
+      case 'café da manhã':
+      case 'breakfast':
+        return '🌅';
+      case 'almoço':
+      case 'lunch':
+        return '🌞';
+      case 'jantar':
+      case 'dinner':
+        return '🌙';
+      case 'lanche':
+      case 'snack':
+        return '🍎';
+      default:
+        return '🍽️';
+    }
+  };
+
+  const getCurrentDay = () => {
+    const startDate = new Date();
+    const daysSinceStart = Math.floor((startDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+    return Math.max(1, (daysSinceStart % 7) + 1); // Cycle through days 1-7
+  };
+
+  if (gamificationLoading || plansLoading) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="space-y-6">
@@ -55,7 +98,7 @@ const Nutrition = () => {
               Minha Alimentação
             </h1>
             <p className="text-muted-foreground mt-2">
-              Acompanhe o progresso dos seus planos alimentares
+              Acompanhe o progresso dos seus planos alimentares com detalhes
             </p>
           </div>
           <Button asChild>
@@ -67,7 +110,7 @@ const Nutrition = () => {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center gap-3">
@@ -90,7 +133,7 @@ const Nutrition = () => {
                 </div>
                 <div>
                   <div className="text-2xl font-bold">{completedPlans.length}</div>
-                  <div className="text-sm text-muted-foreground">Planos Concluídos</div>
+                  <div className="text-sm text-muted-foreground">Concluídos</div>
                 </div>
               </div>
             </CardContent>
@@ -108,7 +151,21 @@ const Nutrition = () => {
                       userPlans.find(p => p.id === cp.user_plan_id && (p.plan_type === 'meal' || p.plan_type === 'diet'))
                     ).length}
                   </div>
-                  <div className="text-sm text-muted-foreground">Seguido Hoje</div>
+                  <div className="text-sm text-muted-foreground">Hoje</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center">
+                  <Zap className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold">Dia {getCurrentDay()}</div>
+                  <div className="text-sm text-muted-foreground">Do Plano</div>
                 </div>
               </div>
             </CardContent>
@@ -129,11 +186,20 @@ const Nutrition = () => {
                 const todayCompleted = todaysCheckpoints.some(
                   cp => cp.user_plan_id === plan.id && cp.completed
                 );
-                const planCheckpoints = checkpoints.filter(cp => cp.user_plan_id === plan.id);
-                const recentCheckpoints = planCheckpoints
-                  .filter(cp => cp.completed)
-                  .slice(0, 5)
-                  .sort((a, b) => new Date(b.checkpoint_date).getTime() - new Date(a.checkpoint_date).getTime());
+                const mealDetails = getMealPlan(plan.plan_id.toString());
+                const currentDay = getCurrentDay();
+                const todaysMeals = getMealsForDay(plan.plan_id.toString(), currentDay);
+
+                // Group meals by meal type
+                const mealsByType = todaysMeals.reduce((acc, meal) => {
+                  if (!acc[meal.meal_type]) {
+                    acc[meal.meal_type] = [];
+                  }
+                  acc[meal.meal_type].push(meal);
+                  return acc;
+                }, {} as { [key: string]: typeof todaysMeals });
+
+                const totalCalories = todaysMeals.reduce((sum, meal) => sum + (meal.calories || 0), 0);
 
                 return (
                   <Card key={plan.id} className="overflow-hidden">
@@ -150,6 +216,11 @@ const Nutrition = () => {
                               <Clock className="h-4 w-4" />
                               {plan.current_progress} de {plan.target_days} dias
                             </span>
+                            {mealDetails && (
+                              <Badge variant="outline">
+                                {mealDetails.goal}
+                              </Badge>
+                            )}
                           </div>
                         </div>
                         <Badge variant={plan.plan_type === 'meal' ? 'default' : 'secondary'}>
@@ -168,44 +239,120 @@ const Nutrition = () => {
                         <Progress value={progress} className="h-3" />
                       </div>
 
-                      {/* Today's Action */}
-                      <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium">Alimentação de Hoje</h4>
-                          <p className="text-sm text-muted-foreground">
-                            {todayCompleted ? 'Parabéns! Plano seguido hoje.' : 'Marque como seguido ao final do dia.'}
-                          </p>
-                        </div>
-                        <Button
-                          onClick={() => handleCompleteCheckpoint(plan.id)}
-                          disabled={todayCompleted}
-                          className="flex items-center gap-2"
-                          variant={todayCompleted ? "outline" : "default"}
-                        >
-                          <CheckCircle className="h-4 w-4" />
-                          {todayCompleted ? 'Seguido!' : 'Marcar'}
-                        </Button>
-                      </div>
+                      {/* Today's Meal Plan Details */}
+                      <Tabs defaultValue="today" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                          <TabsTrigger value="today">Alimentação de Hoje</TabsTrigger>
+                          <TabsTrigger value="week">Semana</TabsTrigger>
+                        </TabsList>
 
-                      {/* Recent Activity */}
-                      {recentCheckpoints.length > 0 && (
-                        <div className="space-y-3">
-                          <h4 className="font-medium text-sm">Atividade Recente</h4>
-                          <div className="space-y-2">
-                            {recentCheckpoints.map((checkpoint) => (
-                              <div key={checkpoint.id} className="flex items-center gap-3 text-sm">
-                                <CheckCircle className="h-4 w-4 text-green-600" />
-                                <span>
-                                  Plano seguido em {format(new Date(checkpoint.checkpoint_date), 'dd MMM', { locale: ptBR })}
-                                </span>
-                                <Badge variant="outline" className="text-xs">
-                                  +{checkpoint.points_earned || 10} pts
-                                </Badge>
+                        <TabsContent value="today" className="space-y-4">
+                          <div className="p-4 bg-muted/50 rounded-lg">
+                            <div className="flex items-center justify-between mb-4">
+                              <div>
+                                <h4 className="font-medium">Dia {currentDay} - Plano Alimentar</h4>
+                                <p className="text-sm text-muted-foreground">
+                                  {Object.keys(mealsByType).length} refeições • {totalCalories} kcal total
+                                </p>
                               </div>
-                            ))}
+                              <Button
+                                onClick={() => handleCompleteCheckpoint(plan.id)}
+                                disabled={todayCompleted}
+                                variant={todayCompleted ? "outline" : "default"}
+                                size="sm"
+                              >
+                                <CheckCircle className="h-4 w-4 mr-2" />
+                                {todayCompleted ? 'Seguido!' : 'Marcar Dia'}
+                              </Button>
+                            </div>
+
+                            {Object.keys(mealsByType).length > 0 ? (
+                              <div className="space-y-4">
+                                {Object.entries(mealsByType).map(([mealType, meals]) => (
+                                  <div key={mealType} className="p-4 bg-background rounded border">
+                                    <div className="flex items-center gap-2 mb-3">
+                                      <span className="text-lg">{getMealTypeIcon(mealType)}</span>
+                                      <h5 className="font-medium">{mealType}</h5>
+                                      <Badge variant="outline" className="text-xs">
+                                        {meals.reduce((sum, meal) => sum + (meal.calories || 0), 0)} kcal
+                                      </Badge>
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                      {meals.map((meal) => (
+                                        <div key={meal.id} className="flex items-center space-x-3 p-2 bg-muted/50 rounded">
+                                          <Checkbox
+                                            id={meal.id}
+                                            checked={completedMeals[meal.id] || false}
+                                            onCheckedChange={() => handleMealToggle(meal.id)}
+                                          />
+                                          <div className="flex-1">
+                                            <div className="font-medium text-sm">{meal.food_item}</div>
+                                            <div className="text-xs text-muted-foreground flex items-center gap-2">
+                                              <span>{meal.quantity}</span>
+                                              <span>•</span>
+                                              <span>{meal.calories} kcal</span>
+                                            </div>
+                                          </div>
+                                          <Utensils className="h-4 w-4 text-muted-foreground" />
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="text-center py-6 text-muted-foreground">
+                                <Apple className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                <p>Nenhuma refeição programada para hoje</p>
+                                <p className="text-sm">Dia livre ou jejum programado</p>
+                              </div>
+                            )}
                           </div>
-                        </div>
-                      )}
+                        </TabsContent>
+
+                        <TabsContent value="week" className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {[1, 2, 3, 4, 5, 6, 7].map((day) => {
+                              const dayMeals = getMealsForDay(plan.plan_id.toString(), day);
+                              const isToday = day === currentDay;
+                              const dayCalories = dayMeals.reduce((sum, meal) => sum + (meal.calories || 0), 0);
+                              const mealTypes = [...new Set(dayMeals.map(meal => meal.meal_type))];
+                              
+                              return (
+                                <Card key={day} className={`${isToday ? 'ring-2 ring-primary' : ''}`}>
+                                  <CardHeader className="pb-2">
+                                    <div className="flex items-center justify-between">
+                                      <h4 className="font-medium">Dia {day}</h4>
+                                      {isToday && <Badge variant="default" className="text-xs">Hoje</Badge>}
+                                    </div>
+                                  </CardHeader>
+                                  <CardContent className="pt-0">
+                                    {dayMeals.length > 0 ? (
+                                      <div className="space-y-2">
+                                        <div className="text-sm font-medium">{dayCalories} kcal</div>
+                                        <div className="text-xs text-muted-foreground">
+                                          {mealTypes.slice(0, 3).map((type, index) => (
+                                            <span key={type}>
+                                              {getMealTypeIcon(type)} {type}
+                                              {index < Math.min(mealTypes.length - 1, 2) && ', '}
+                                            </span>
+                                          ))}
+                                          {mealTypes.length > 3 && ` +${mealTypes.length - 3}`}
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <div className="text-sm text-muted-foreground">
+                                        Sem refeições
+                                      </div>
+                                    )}
+                                  </CardContent>
+                                </Card>
+                              );
+                            })}
+                          </div>
+                        </TabsContent>
+                      </Tabs>
                     </CardContent>
                   </Card>
                 );
