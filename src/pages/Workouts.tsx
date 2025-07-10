@@ -9,6 +9,7 @@ import { useGamification } from '@/hooks/useGamification';
 import { useDetailedPlans } from '@/hooks/useDetailedPlans';
 import { useDetailedCheckpoints } from '@/hooks/useDetailedCheckpoints';
 import { DetailedExerciseCard } from '@/components/workouts/DetailedExerciseCard';
+import { WorkoutExerciseChecklist } from '@/components/workouts/WorkoutExerciseChecklist';
 import { CheckCircle, Calendar, Target, Dumbbell, Clock, Trophy, Plus, Timer, Zap, Play, BarChart3 } from 'lucide-react';
 import { format, addDays, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -288,8 +289,9 @@ const Workouts = () => {
 
                       {/* Today's Workout Details */}
                       <Tabs defaultValue="today" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2">
+                        <TabsList className="grid w-full grid-cols-3">
                           <TabsTrigger value="today">Treino de Hoje</TabsTrigger>
+                          <TabsTrigger value="program">Programa Gamificado</TabsTrigger>
                           <TabsTrigger value="week">Semana</TabsTrigger>
                         </TabsList>
 
@@ -391,6 +393,30 @@ const Workouts = () => {
                                 <p className="text-sm">Dia de descanso ou treino livre</p>
                               </div>
                             )}
+                          </div>
+                        </TabsContent>
+
+                        <TabsContent value="program" className="space-y-4">
+                          <div className="p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg border border-primary/20">
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                                <Target className="h-5 w-5 text-primary" />
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-lg">Programa Gamificado</h4>
+                                <p className="text-sm text-muted-foreground">
+                                  Sistema de checklist interativo ideal para iniciantes e pessoas com TDAH
+                                </p>
+                              </div>
+                            </div>
+                            
+                            <WorkoutExerciseChecklist
+                              workoutId={plan.plan_id}
+                              onCompleteWorkout={(completed, total) => {
+                                // Handle workout completion
+                                handleCompleteCheckpoint(plan.id);
+                              }}
+                            />
                           </div>
                         </TabsContent>
 

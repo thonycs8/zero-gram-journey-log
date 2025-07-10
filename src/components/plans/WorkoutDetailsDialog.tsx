@@ -262,31 +262,99 @@ export const WorkoutDetailsDialog = ({ workout, open, onOpenChange }: WorkoutDet
 
           <Separator />
 
-          {/* Workout Plan */}
+          {/* Workout Plan with Gamification */}
           <div>
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
-              <Dumbbell className="h-4 w-4" />
-              Programa de Exercícios
-            </h3>
-            
-            <div className="space-y-6">
-              {Object.entries(exercises).map(([dayKey, day]: [string, any]) => (
-                <div key={dayKey} className="border rounded-lg p-4">
-                  <h4 className="font-medium text-lg mb-3 text-primary">{day.name}</h4>
-                  <div className="space-y-2">
-                    {day.exercises.map((exercise: any, index: number) => (
-                      <div key={index} className="flex items-center justify-between p-2 hover:bg-muted/50 rounded">
-                        <div className="font-medium">{exercise.name}</div>
-                        <div className="flex gap-4 text-sm text-muted-foreground">
-                          <span>{exercise.sets}</span>
-                          <span>{exercise.reps}</span>
-                          <span>Desc: {exercise.rest}</span>
-                        </div>
-                      </div>
-                    ))}
+            <div className="bg-gradient-to-r from-primary/5 to-secondary/5 p-6 rounded-lg border border-primary/20">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <Dumbbell className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Programa de Exercícios Gamificado</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Sistema de checklist interativo para acompanhar cada exercício e ganhar pontos
+                  </p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-background/80 p-3 rounded border">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                      <span className="text-green-600 text-sm font-bold">✓</span>
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Sistema de Checklist</div>
+                      <div className="text-xs text-muted-foreground">Marque exercícios concluídos</div>
+                    </div>
                   </div>
                 </div>
-              ))}
+                
+                <div className="bg-background/80 p-3 rounded border">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600 text-sm font-bold">★</span>
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Sistema de Pontos</div>
+                      <div className="text-xs text-muted-foreground">Ganhe pontos por exercício</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-background/80 p-3 rounded border">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                      <span className="text-purple-600 text-sm font-bold">🎯</span>
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Ideal para TDAH</div>
+                      <div className="text-xs text-muted-foreground">Foco em pequenas tarefas</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="font-medium">Prévia dos Exercícios:</h4>
+                {Object.entries(exercises).map(([dayKey, day]: [string, any], dayIndex) => (
+                  <div key={dayKey} className="border rounded-lg p-4 bg-background/50">
+                    <div className="flex items-center justify-between mb-2">
+                      <h5 className="font-medium text-primary">Dia {dayIndex + 1}: {day.name}</h5>
+                      <span className="text-xs text-muted-foreground">{day.exercises.length} exercícios</span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                      {day.exercises.slice(0, 4).map((exercise: any, index: number) => (
+                        <div key={index} className="flex items-center gap-2 text-muted-foreground">
+                          <span className="w-4 h-4 border rounded flex-shrink-0"></span>
+                          <span className="truncate">{exercise.name}</span>
+                        </div>
+                      ))}
+                      {day.exercises.length > 4 && (
+                        <div className="text-xs text-muted-foreground">
+                          +{day.exercises.length - 4} exercícios...
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg dark:bg-yellow-950 dark:border-yellow-800">
+                <div className="flex items-start gap-3">
+                  <div className="text-xl">🧠</div>
+                  <div>
+                    <h5 className="font-medium text-yellow-800 dark:text-yellow-200 mb-1">
+                      Desenvolvido para Iniciantes e Pessoas com TDAH
+                    </h5>
+                    <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                      O sistema de checklist gamificado ajuda a manter o foco, dividindo o treino em pequenas 
+                      tarefas alcançáveis. Cada exercício concluído gera recompensas visuais e pontos, 
+                      mantendo a motivação alta durante todo o treino.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
