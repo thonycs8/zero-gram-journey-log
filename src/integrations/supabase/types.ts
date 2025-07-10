@@ -549,6 +549,77 @@ export type Database = {
           },
         ]
       }
+      user_achievements_unlocked: {
+        Row: {
+          achievement_description: string | null
+          achievement_title: string
+          achievement_type: string
+          id: string
+          points_awarded: number | null
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_description?: string | null
+          achievement_title: string
+          achievement_type: string
+          id?: string
+          points_awarded?: number | null
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_description?: string | null
+          achievement_title?: string
+          achievement_type?: string
+          id?: string
+          points_awarded?: number | null
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_checkpoints: {
+        Row: {
+          checkpoint_date: string
+          completed: boolean | null
+          created_at: string
+          id: string
+          notes: string | null
+          points_earned: number | null
+          user_id: string
+          user_plan_id: string
+        }
+        Insert: {
+          checkpoint_date?: string
+          completed?: boolean | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          points_earned?: number | null
+          user_id: string
+          user_plan_id: string
+        }
+        Update: {
+          checkpoint_date?: string
+          completed?: boolean | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          points_earned?: number | null
+          user_id?: string
+          user_plan_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_checkpoints_user_plan_id_fkey"
+            columns: ["user_plan_id"]
+            isOneToOne: false
+            referencedRelation: "user_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_goals: {
         Row: {
           created_at: string
@@ -585,6 +656,48 @@ export type Database = {
           user_id?: string
           weekly_exercise?: number | null
           weekly_goal?: number | null
+        }
+        Relationships: []
+      }
+      user_plans: {
+        Row: {
+          created_at: string
+          current_progress: number | null
+          id: string
+          is_completed: boolean | null
+          plan_id: number
+          plan_title: string
+          plan_type: string
+          start_date: string
+          target_days: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_progress?: number | null
+          id?: string
+          is_completed?: boolean | null
+          plan_id: number
+          plan_title: string
+          plan_type: string
+          start_date?: string
+          target_days?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_progress?: number | null
+          id?: string
+          is_completed?: boolean | null
+          plan_id?: number
+          plan_title?: string
+          plan_type?: string
+          start_date?: string
+          target_days?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

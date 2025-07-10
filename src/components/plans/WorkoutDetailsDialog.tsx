@@ -1,7 +1,10 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Clock, Target, TrendingUp, Calendar, Dumbbell } from 'lucide-react';
+import { Clock, Target, TrendingUp, Calendar, Dumbbell, Play } from 'lucide-react';
+import { useGamification } from '@/hooks/useGamification';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface WorkoutPlan {
   id: number;
@@ -22,7 +25,18 @@ interface WorkoutDetailsDialogProps {
 }
 
 export const WorkoutDetailsDialog = ({ workout, open, onOpenChange }: WorkoutDetailsDialogProps) => {
+  const { createUserPlan } = useGamification();
+  const { user } = useAuth();
+
   if (!workout) return null;
+
+  const handleStartPlan = async () => {
+    if (!user) return;
+    
+    const targetDays = workout.duration.includes('8') ? 56 : workout.duration.includes('6') ? 42 : 28;
+    await createUserPlan('workout', workout.id, workout.title, targetDays);
+    onOpenChange(false);
+  };
 
   const getWorkoutExercises = (workoutId: number) => {
     switch (workoutId) {
@@ -311,6 +325,18 @@ export const WorkoutDetailsDialog = ({ workout, open, onOpenChange }: WorkoutDet
             </div>
           </div>
         </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Fechar
+          </Button>
+          {user && (
+            <Button onClick={handleStartPlan} className="flex items-center gap-2">
+              <Play className="h-4 w-4" />
+              Começar Plano
+            </Button>
+          )}
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

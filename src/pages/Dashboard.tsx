@@ -1,18 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calculator, ArrowUp, ArrowDown } from 'lucide-react';
+import { Calculator, ArrowUp, ArrowDown, Trophy, Target } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AdSidebar } from '@/components/ads/AdSidebar';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { useAds } from '@/hooks/useAds';
+import { GamificationDashboard } from '@/components/gamification/GamificationDashboard';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Dashboard = () => {
   const { t } = useTranslation();
   const { shouldShowAds } = useAds();
+  const { user } = useAuth();
   const [progress] = useState(68); // Progresso semanal simulado
 
   const stats = {
@@ -185,6 +188,13 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Gamification System */}
+      {user && (
+        <div className="animate-fade-in">
+          <GamificationDashboard />
+        </div>
+      )}
 
       {/* Motivational Card */}
       <Card className="gradient-secondary animate-fade-in">

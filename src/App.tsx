@@ -15,6 +15,7 @@ import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import PremiumAdmin from "./pages/PremiumAdmin";
+import Help from "./pages/Help";
 import CalorieCalculator from "./components/CalorieCalculator";
 import MotivationalBlog from "./components/MotivationalBlog";
 import NotFound from "./pages/NotFound";
@@ -57,6 +58,7 @@ const App = () => (
                 <PremiumAdmin />
               </ProtectedRoute>
             } />
+            <Route path="/ajuda" element={<Help />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

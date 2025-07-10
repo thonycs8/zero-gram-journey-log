@@ -1,7 +1,10 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Clock, Target, TrendingUp, Calendar, Apple, Users } from 'lucide-react';
+import { Clock, Target, TrendingUp, Calendar, Apple, Users, Play } from 'lucide-react';
+import { useGamification } from '@/hooks/useGamification';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface MealPlan {
   id: number;
@@ -22,7 +25,18 @@ interface MealPlanDetailsDialogProps {
 }
 
 export const MealPlanDetailsDialog = ({ mealPlan, open, onOpenChange }: MealPlanDetailsDialogProps) => {
+  const { createUserPlan } = useGamification();
+  const { user } = useAuth();
+
   if (!mealPlan) return null;
+
+  const handleStartPlan = async () => {
+    if (!user) return;
+    
+    const targetDays = parseInt(mealPlan.duration.match(/\d+/)?.[0] || '30');
+    await createUserPlan('meal', mealPlan.id, mealPlan.title, targetDays);
+    onOpenChange(false);
+  };
 
   const getMealPlanDetails = (planId: number) => {
     switch (planId) {
@@ -360,6 +374,18 @@ export const MealPlanDetailsDialog = ({ mealPlan, open, onOpenChange }: MealPlan
             </div>
           </div>
         </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Fechar
+          </Button>
+          {user && (
+            <Button onClick={handleStartPlan} className="flex items-center gap-2">
+              <Play className="h-4 w-4" />
+              Começar Plano
+            </Button>
+          )}
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

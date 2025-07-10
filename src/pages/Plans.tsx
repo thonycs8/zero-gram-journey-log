@@ -10,6 +10,8 @@ import { CreateMealPlanDialog } from '@/components/plans/CreateMealPlanDialog';
 import { DietDetailsDialog } from '@/components/plans/DietDetailsDialog';
 import { WorkoutDetailsDialog } from '@/components/plans/WorkoutDetailsDialog';
 import { MealPlanDetailsDialog } from '@/components/plans/MealPlanDetailsDialog';
+import { useGamification } from '@/hooks/useGamification';
+import { useAuth } from '@/contexts/AuthContext';
 import { useAds } from '@/hooks/useAds';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { AdSquare } from '@/components/ads/AdSquare';
@@ -17,6 +19,8 @@ import { AdSquare } from '@/components/ads/AdSquare';
 const Plans = () => {
   const { t } = useTranslation();
   const { shouldShowAds } = useAds();
+  const { user } = useAuth();
+  const { createUserPlan } = useGamification();
 
   const dietTypes = [
     {
