@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useGamification } from '@/hooks/useGamification';
 import { useDetailedPlans } from '@/hooks/useDetailedPlans';
+import { MealChecklistGamified } from '@/components/nutrition/MealChecklistGamified';
 import { CheckCircle, Calendar, Target, Apple, Clock, Trophy, Plus, Utensils, Zap } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -240,11 +241,22 @@ const Nutrition = () => {
                       </div>
 
                       {/* Today's Meal Plan Details */}
-                      <Tabs defaultValue="today" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2">
+                      <Tabs defaultValue="gamified" className="w-full">
+                        <TabsList className="grid w-full grid-cols-3">
+                          <TabsTrigger value="gamified">Programa Gamificado</TabsTrigger>
                           <TabsTrigger value="today">Alimentação de Hoje</TabsTrigger>
                           <TabsTrigger value="week">Semana</TabsTrigger>
                         </TabsList>
+
+                        <TabsContent value="gamified" className="space-y-4">
+                          <MealChecklistGamified 
+                            nutritionPlanId={plan.plan_id}
+                            onCompleteMeal={(completed, total) => {
+                              // Handle meal completion
+                              console.log(`Completed ${completed}/${total} meals`);
+                            }}
+                          />
+                        </TabsContent>
 
                         <TabsContent value="today" className="space-y-4">
                           <div className="p-4 bg-muted/50 rounded-lg">
