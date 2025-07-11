@@ -27,9 +27,7 @@ const NavigationHeader = () => {
     { path: '/alimentacao', label: 'Alimentação' },
     { path: '/vip', label: 'VIP' },
     { path: '/blog', label: t('nav.blog') },
-    ...(isAdmin ? [{ path: '/admin', label: 'Admin' }] : []),
-    ...(isPremium ? [{ path: '/criar', label: 'Criar Conteúdo' }] : []),
-    { path: '/perfil', label: t('nav.profile') }
+    ...(isPremium ? [{ path: '/criar', label: 'Criar Conteúdo' }] : [])
   ];
 
   const changeLanguage = (language: string) => {
@@ -74,7 +72,7 @@ const NavigationHeader = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
+        <nav className="hidden md:flex items-center space-x-6 ml-8">
           <NavLinks />
           
           {/* Store Button */}
