@@ -333,6 +333,50 @@ const Workouts = () => {
                             </div>
                           </div>
                         </div>
+
+                        {/* Detailed Plan Summary */}
+                        <div className="mt-4 pt-4 border-t border-border/50">
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg">💪</span>
+                              <span className="font-medium text-sm">{plan.plan_title}</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              {workoutDetails?.description || 'Plano focado no desenvolvimento físico e fortalecimento muscular'}
+                            </p>
+                            <div className="space-y-2">
+                              <h5 className="text-xs font-medium text-muted-foreground">Exercícios Principais:</h5>
+                              <div className="grid grid-cols-1 gap-1">
+                                {(() => {
+                                  const allExercises = new Set<string>();
+                                  for (let day = 0; day < 7; day++) {
+                                    const dayExercises = getExercisesForDay(plan.plan_id.toString(), day);
+                                    dayExercises.slice(0, 3).forEach(ex => allExercises.add(ex.exercise_name));
+                                    if (allExercises.size >= 4) break;
+                                  }
+                                  return Array.from(allExercises).slice(0, 4).map((exercise, index) => (
+                                    <div key={index} className="flex items-center gap-2 text-xs">
+                                      <div className="w-1 h-1 bg-primary rounded-full"></div>
+                                      <span>{exercise}</span>
+                                    </div>
+                                  ));
+                                })()}
+                                {(() => {
+                                  const allExercises = new Set<string>();
+                                  for (let day = 0; day < 7; day++) {
+                                    const dayExercises = getExercisesForDay(plan.plan_id.toString(), day);
+                                    dayExercises.forEach(ex => allExercises.add(ex.exercise_name));
+                                  }
+                                  return allExercises.size === 0 ? (
+                                    <div className="text-xs text-muted-foreground italic">
+                                      Exercícios serão carregados ao iniciar o treino
+                                    </div>
+                                  ) : null;
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Motivational Tip */}
