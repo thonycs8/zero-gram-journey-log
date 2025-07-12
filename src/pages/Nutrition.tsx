@@ -8,6 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useGamification } from '@/hooks/useGamification';
 import { useDetailedPlans } from '@/hooks/useDetailedPlans';
 import { MealChecklistGamified } from '@/components/nutrition/MealChecklistGamified';
+import { ActiveNutritionManager } from '@/components/nutrition/ActiveNutritionManager';
+import { useDetailedCheckpoints } from '@/hooks/useDetailedCheckpoints';
 import { CheckCircle, Calendar, Target, Apple, Clock, Trophy, Plus, Utensils, Zap } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -27,6 +29,10 @@ const Nutrition = () => {
     getMealPlan,
     loading: plansLoading
   } = useDetailedPlans();
+
+  const {
+    getTodaysStats: getNutritionStats
+  } = useDetailedCheckpoints();
 
   const [completedMeals, setCompletedMeals] = useState<{ [key: string]: boolean }>({});
 
@@ -173,16 +179,25 @@ const Nutrition = () => {
           </Card>
         </div>
 
-        {/* Active Nutrition Plans */}
-        {activePlans.length > 0 && (
-          <div className="space-y-6">
+        {/* Active Nutrition Plans with Management */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold flex items-center gap-2">
               <Target className="h-6 w-6 text-primary" />
               Planos Ativos
             </h2>
-            
-            <div className="grid gap-6">
-              {activePlans.map((plan) => {
+          </div>
+          
+          <Tabs defaultValue="nutrition" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="nutrition">Modo Alimentação</TabsTrigger>
+              <TabsTrigger value="management">Gerenciamento</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="nutrition" className="space-y-6">
+              {activePlans.length > 0 ? (
+                <div className="grid gap-6">
+                  {activePlans.map((plan) => {
                 const progress = getPlanProgress(plan);
                 const todayCompleted = todaysCheckpoints.some(
                   cp => cp.user_plan_id === plan.id && cp.completed
@@ -367,11 +382,33 @@ const Nutrition = () => {
                       </Tabs>
                     </CardContent>
                   </Card>
-                );
-              })}
-            </div>
-          </div>
-        )}
+                  );
+                })}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Apple className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                  <h3 className="text-lg font-medium mb-2">Nenhum plano ativo</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Escolha um plano alimentar para começar.
+                  </p>
+                  <Button asChild>
+                    <a href="/planos">Escolher Plano</a>
+                  </Button>
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="management" className="space-y-6">
+              <ActiveNutritionManager
+                activePlans={activePlans}
+                onPlanRemoved={() => window.location.reload()}
+                getPlanProgress={getPlanProgress}
+                getTodaysStats={getNutritionStats}
+              />
+            </TabsContent>
+          </Tabs>
+        </div>
 
         {/* Completed Plans */}
         {completedPlans.length > 0 && (

@@ -10,6 +10,7 @@ import { useDetailedPlans } from '@/hooks/useDetailedPlans';
 import { useDetailedCheckpoints } from '@/hooks/useDetailedCheckpoints';
 import { DetailedExerciseCard } from '@/components/workouts/DetailedExerciseCard';
 import { WorkoutExerciseChecklist } from '@/components/workouts/WorkoutExerciseChecklist';
+import { ActiveWorkoutManager } from '@/components/workouts/ActiveWorkoutManager';
 import { CheckCircle, Calendar, Target, Dumbbell, Clock, Trophy, Plus, Timer, Zap, Play, BarChart3 } from 'lucide-react';
 import { format, addDays, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -233,243 +234,254 @@ const Workouts = () => {
           </Card>
         </div>
 
-        {/* Active Workout Plans */}
-        {activePlans.length > 0 && (
-          <div className="space-y-6">
+        {/* Active Workout Plans with Management */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold flex items-center gap-2">
               <Target className="h-6 w-6 text-primary" />
               Treinos Ativos
             </h2>
-            
-            <div className="grid gap-6">
-              {activePlans.map((plan) => {
-                const progress = getPlanProgress(plan);
-                const todayCompleted = todaysCheckpoints.some(
-                  cp => cp.user_plan_id === plan.id && cp.completed
-                );
-                const workoutDetails = getWorkoutPlan(plan.plan_id.toString());
-                const currentDay = getCurrentWeekDay();
-                const todaysExercises = getExercisesForDay(plan.plan_id.toString(), currentDay);
+          </div>
+          
+          <Tabs defaultValue="training" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="training">Modo Treino</TabsTrigger>
+              <TabsTrigger value="management">Gerenciamento</TabsTrigger>
+            </TabsList>
 
-                return (
-                  <Card key={plan.id} className="overflow-hidden">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-2">
-                          <CardTitle className="text-xl">{plan.plan_title}</CardTitle>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Calendar className="h-4 w-4" />
-                              Iniciado em {format(new Date(plan.start_date), 'dd MMM yyyy', { locale: ptBR })}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" />
-                              {plan.current_progress} de {plan.target_days} dias
-                            </span>
-                            {workoutDetails && (
-                              <Badge variant="outline">
-                                {workoutDetails.difficulty}
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                        <Badge variant="default">Treino</Badge>
-                      </div>
-                    </CardHeader>
+            <TabsContent value="training" className="space-y-6">
+              {activePlans.length > 0 ? (
+                <div className="grid gap-6">
+                  {activePlans.map((plan) => {
+                    const progress = getPlanProgress(plan);
+                    const todayCompleted = todaysCheckpoints.some(
+                      cp => cp.user_plan_id === plan.id && cp.completed
+                    );
+                    const workoutDetails = getWorkoutPlan(plan.plan_id.toString());
+                    const currentDay = getCurrentWeekDay();
+                    const todaysExercises = getExercisesForDay(plan.plan_id.toString(), currentDay);
 
-                    <CardContent className="space-y-6">
-                      {/* Progress */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Progresso</span>
-                          <span className="font-medium">{progress.toFixed(1)}%</span>
-                        </div>
-                        <Progress value={progress} className="h-3" />
-                      </div>
-
-                      {/* Today's Workout Details */}
-                      <Tabs defaultValue="today" className="w-full">
-                        <TabsList className="grid w-full grid-cols-3">
-                          <TabsTrigger value="today">Treino de Hoje</TabsTrigger>
-                          <TabsTrigger value="program">Programa Gamificado</TabsTrigger>
-                          <TabsTrigger value="week">Semana</TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="today" className="space-y-4">
-                          <div className="p-4 bg-muted/50 rounded-lg">
-                            <div className="flex items-center justify-between mb-4">
-                              <div>
-                                <h4 className="font-medium">{getDayName(currentDay)} - Treino do Dia</h4>
-                                <p className="text-sm text-muted-foreground">
-                                  {todaysExercises.length} exercícios programados
-                                </p>
-                              </div>
-                              <div className="flex gap-2">
-                                {!activeWorkoutSession && todaysExercises.length > 0 && (
-                                  <Button
-                                    onClick={() => handleStartWorkout(plan)}
-                                    variant="default"
-                                    size="sm"
-                                  >
-                                    <Play className="h-4 w-4 mr-2" />
-                                    Iniciar Treino
-                                  </Button>
+                    return (
+                      <Card key={plan.id} className="overflow-hidden">
+                        <CardHeader className="pb-4">
+                          <div className="flex items-start justify-between">
+                            <div className="space-y-2">
+                              <CardTitle className="text-xl">{plan.plan_title}</CardTitle>
+                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="h-4 w-4" />
+                                  Iniciado em {format(new Date(plan.start_date), 'dd MMM yyyy', { locale: ptBR })}
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <Clock className="h-4 w-4" />
+                                  {plan.current_progress} de {plan.target_days} dias
+                                </span>
+                                {workoutDetails && (
+                                  <Badge variant="outline">
+                                    {workoutDetails.difficulty}
+                                  </Badge>
                                 )}
-                                <Button
-                                  onClick={() => handleCompleteCheckpoint(plan.id)}
-                                  disabled={todayCompleted}
-                                  variant={todayCompleted ? "outline" : "secondary"}
-                                  size="sm"
-                                >
-                                  <CheckCircle className="h-4 w-4 mr-2" />
-                                  {todayCompleted ? 'Concluído!' : 'Finalizar Treino'}
-                                </Button>
                               </div>
                             </div>
+                            <Badge variant="default">Treino</Badge>
+                          </div>
+                        </CardHeader>
 
-                            {todaysExercises.length > 0 ? (
-                              <div className="space-y-4">
-                                {/* Check if we have detailed checkpoints for this plan */}
-                                {exercisesBySession.has(plan.id) ? (
-                                  // Show detailed exercise cards
-                                  <div className="space-y-3">
-                                    <div className="text-sm font-medium text-green-600 mb-3">
-                                      ✨ Modo Treino Detalhado Ativado
-                                    </div>
-                                    {exercisesBySession.get(plan.id)?.map((exerciseCheckpoint) => (
-                                      <DetailedExerciseCard
-                                        key={exerciseCheckpoint.id}
-                                        exercise={exerciseCheckpoint}
-                                        onComplete={handleCompleteExercise}
-                                      />
-                                    ))}
+                        <CardContent className="space-y-6">
+                          {/* Progress */}
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span>Progresso</span>
+                              <span className="font-medium">{progress.toFixed(1)}%</span>
+                            </div>
+                            <Progress value={progress} className="h-3" />
+                          </div>
+
+                          {/* Today's Workout Details */}
+                          <Tabs defaultValue="today" className="w-full">
+                            <TabsList className="grid w-full grid-cols-3">
+                              <TabsTrigger value="today">Treino de Hoje</TabsTrigger>
+                              <TabsTrigger value="program">Programa Gamificado</TabsTrigger>
+                              <TabsTrigger value="week">Semana</TabsTrigger>
+                            </TabsList>
+
+                            <TabsContent value="today" className="space-y-4">
+                              <div className="p-4 bg-muted/50 rounded-lg">
+                                <div className="flex items-center justify-between mb-4">
+                                  <div>
+                                    <h4 className="font-medium">{getDayName(currentDay)} - Treino do Dia</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                      {todaysExercises.length} exercícios programados
+                                    </p>
                                   </div>
-                                ) : (
-                                  // Show simplified exercise list
-                                  <div className="space-y-3">
-                                    {todaysExercises.map((exercise, index) => (
-                                      <div key={exercise.id} className="flex items-center space-x-3 p-3 bg-background rounded border">
-                                        <Checkbox
-                                          id={exercise.id}
-                                          checked={completedExercises[exercise.id] || false}
-                                          onCheckedChange={() => handleExerciseToggle(exercise.id)}
-                                        />
-                                        <div className="flex-1">
-                                          <div className="font-medium">{exercise.exercise_name}</div>
-                                          <div className="text-sm text-muted-foreground flex items-center gap-4">
-                                            <span>{exercise.sets} séries</span>
-                                            <span>{exercise.reps} repetições</span>
-                                            {exercise.rest_seconds && (
-                                              <span className="flex items-center gap-1">
-                                                <Timer className="h-3 w-3" />
-                                                {Math.floor(exercise.rest_seconds / 60)}min descanso
-                                              </span>
-                                            )}
-                                          </div>
-                                          {exercise.notes && (
-                                            <div className="text-xs text-muted-foreground mt-1">
-                                              💡 {exercise.notes}
-                                            </div>
-                                          )}
+                                  <div className="flex gap-2">
+                                    {!activeWorkoutSession && todaysExercises.length > 0 && (
+                                      <Button
+                                        onClick={() => handleStartWorkout(plan)}
+                                        variant="default"
+                                        size="sm"
+                                      >
+                                        <Play className="h-4 w-4 mr-2" />
+                                        Iniciar Treino
+                                      </Button>
+                                    )}
+                                    <Button
+                                      onClick={() => handleCompleteCheckpoint(plan.id)}
+                                      disabled={todayCompleted}
+                                      variant={todayCompleted ? "outline" : "secondary"}
+                                      size="sm"
+                                    >
+                                      <CheckCircle className="h-4 w-4 mr-2" />
+                                      {todayCompleted ? 'Concluído!' : 'Finalizar Treino'}
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                {todaysExercises.length > 0 ? (
+                                  <div className="space-y-4">
+                                    {/* Check if we have detailed checkpoints for this plan */}
+                                    {exercisesBySession.has(plan.id) ? (
+                                      // Show detailed exercise cards
+                                      <div className="space-y-3">
+                                        <div className="text-sm font-medium text-green-600 mb-3">
+                                          ✨ Modo Treino Detalhado Ativado
                                         </div>
-                                        <Badge variant="outline" className="text-xs">
-                                          Ex. {index + 1}
-                                        </Badge>
-                                      </div>
-                                    ))}
-                                    <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                      <p className="text-sm text-blue-800">
-                                        💡 <strong>Dica:</strong> Clique em "Iniciar Treino" para ativar o modo detalhado com 
-                                        acompanhamento individual de cada exercício e sistema de pontuação avançado!
-                                      </p>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            ) : (
-                              <div className="text-center py-6 text-muted-foreground">
-                                <Dumbbell className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                                <p>Nenhum exercício programado para hoje</p>
-                                <p className="text-sm">Dia de descanso ou treino livre</p>
-                              </div>
-                            )}
-                          </div>
-                        </TabsContent>
-
-                        <TabsContent value="program" className="space-y-4">
-                          <div className="p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg border border-primary/20">
-                            <div className="flex items-center gap-3 mb-4">
-                              <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                                <Target className="h-5 w-5 text-primary" />
-                              </div>
-                              <div>
-                                <h4 className="font-medium text-lg">Programa Gamificado</h4>
-                                <p className="text-sm text-muted-foreground">
-                                  Sistema de checklist interativo ideal para iniciantes e pessoas com TDAH
-                                </p>
-                              </div>
-                            </div>
-                            
-                            <WorkoutExerciseChecklist
-                              workoutId={plan.plan_id}
-                              onCompleteWorkout={(completed, total) => {
-                                // Handle workout completion
-                                handleCompleteCheckpoint(plan.id);
-                              }}
-                            />
-                          </div>
-                        </TabsContent>
-
-                        <TabsContent value="week" className="space-y-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {[0, 1, 2, 3, 4, 5, 6].map((day) => {
-                              const dayExercises = getExercisesForDay(plan.plan_id.toString(), day);
-                              const isToday = day === currentDay;
-                              
-                              return (
-                                <Card key={day} className={`${isToday ? 'ring-2 ring-primary' : ''}`}>
-                                  <CardHeader className="pb-2">
-                                    <div className="flex items-center justify-between">
-                                      <h4 className="font-medium">{getDayName(day)}</h4>
-                                      {isToday && <Badge variant="default" className="text-xs">Hoje</Badge>}
-                                    </div>
-                                  </CardHeader>
-                                  <CardContent className="pt-0">
-                                    {dayExercises.length > 0 ? (
-                                      <div className="space-y-2">
-                                        {dayExercises.slice(0, 3).map((exercise) => (
-                                          <div key={exercise.id} className="text-sm">
-                                            <div className="font-medium">{exercise.exercise_name}</div>
-                                            <div className="text-xs text-muted-foreground">
-                                              {exercise.sets}x{exercise.reps}
-                                            </div>
-                                          </div>
+                                        {exercisesBySession.get(plan.id)?.map((exerciseCheckpoint) => (
+                                          <DetailedExerciseCard
+                                            key={exerciseCheckpoint.id}
+                                            exercise={exerciseCheckpoint}
+                                            onComplete={handleCompleteExercise}
+                                          />
                                         ))}
-                                        {dayExercises.length > 3 && (
-                                          <div className="text-xs text-muted-foreground">
-                                            +{dayExercises.length - 3} exercícios
-                                          </div>
-                                        )}
                                       </div>
                                     ) : (
-                                      <div className="text-sm text-muted-foreground">
-                                        Descanso
+                                      // Show simplified exercise list
+                                      <div className="space-y-3">
+                                        {todaysExercises.map((exercise, index) => (
+                                          <div key={exercise.id} className="flex items-center space-x-3 p-3 bg-background rounded border">
+                                            <Checkbox
+                                              id={exercise.id}
+                                              checked={completedExercises[exercise.id] || false}
+                                              onCheckedChange={() => handleExerciseToggle(exercise.id)}
+                                            />
+                                            <div className="flex-1">
+                                              <div className="font-medium">{exercise.exercise_name}</div>
+                                              <div className="text-sm text-muted-foreground flex items-center gap-4">
+                                                <span>{exercise.sets} séries</span>
+                                                <span>{exercise.reps} repetições</span>
+                                                {exercise.rest_seconds && (
+                                                  <span className="flex items-center gap-1">
+                                                    <Timer className="h-3 w-3" />
+                                                    {Math.floor(exercise.rest_seconds / 60)}min descanso
+                                                  </span>
+                                                )}
+                                              </div>
+                                              {exercise.notes && (
+                                                <div className="text-xs text-muted-foreground mt-1">
+                                                  💡 {exercise.notes}
+                                                </div>
+                                              )}
+                                            </div>
+                                            <Badge variant="outline" className="text-xs">
+                                              Ex. {index + 1}
+                                            </Badge>
+                                          </div>
+                                        ))}
+                                        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                          <p className="text-sm text-blue-800">
+                                            💡 <strong>Dica:</strong> Clique em "Iniciar Treino" para ativar o modo detalhado com 
+                                            acompanhamento individual de cada exercício e sistema de pontuação avançado!
+                                          </p>
+                                        </div>
                                       </div>
                                     )}
-                                  </CardContent>
-                                </Card>
-                              );
-                            })}
-                          </div>
-                        </TabsContent>
-                      </Tabs>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        )}
+                                  </div>
+                                ) : (
+                                  <div className="text-center py-6 text-muted-foreground">
+                                    <Dumbbell className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                    <p>Nenhum exercício programado para hoje</p>
+                                    <p className="text-sm">Dia de descanso programado</p>
+                                  </div>
+                                )}
+                              </div>
+                            </TabsContent>
+
+                            <TabsContent value="program" className="space-y-4">
+                              <WorkoutExerciseChecklist 
+                                workoutId={plan.plan_id}
+                                onCompleteWorkout={() => handleCompleteCheckpoint(plan.id)}
+                              />
+                            </TabsContent>
+
+                            <TabsContent value="week" className="space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {[0, 1, 2, 3, 4, 5, 6].map((day) => {
+                                  const dayExercises = getExercisesForDay(plan.plan_id.toString(), day);
+                                  const isToday = day === getCurrentWeekDay();
+                                  
+                                  return (
+                                    <Card key={day} className={`${isToday ? 'ring-2 ring-primary' : ''}`}>
+                                      <CardHeader className="pb-2">
+                                        <div className="flex items-center justify-between">
+                                          <h4 className="font-medium">{getDayName(day)}</h4>
+                                          {isToday && <Badge variant="default" className="text-xs">Hoje</Badge>}
+                                        </div>
+                                      </CardHeader>
+                                      <CardContent className="pt-0">
+                                        {dayExercises.length > 0 ? (
+                                          <div className="space-y-2">
+                                            <div className="text-sm font-medium">{dayExercises.length} exercícios</div>
+                                            <div className="text-xs text-muted-foreground">
+                                              {dayExercises.slice(0, 2).map((exercise, index) => (
+                                                <div key={exercise.id}>
+                                                  {exercise.exercise_name}
+                                                  {index < Math.min(dayExercises.length - 1, 1) && ', '}
+                                                </div>
+                                              ))}
+                                              {dayExercises.length > 2 && ` +${dayExercises.length - 2} mais`}
+                                            </div>
+                                          </div>
+                                        ) : (
+                                          <div className="text-sm text-muted-foreground">
+                                            Descanso
+                                          </div>
+                                        )}
+                                      </CardContent>
+                                    </Card>
+                                  );
+                                })}
+                              </div>
+                            </TabsContent>
+                          </Tabs>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Target className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                  <h3 className="text-lg font-medium mb-2">Nenhum treino ativo</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Escolha um plano de treino para começar.
+                  </p>
+                  <Button asChild>
+                    <a href="/planos">Escolher Treino</a>
+                  </Button>
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="management" className="space-y-6">
+              <ActiveWorkoutManager
+                activePlans={activePlans}
+                onPlanRemoved={() => window.location.reload()}
+                getPlanProgress={getPlanProgress}
+                getTodaysStats={getTodaysStats}
+              />
+            </TabsContent>
+          </Tabs>
+        </div>
 
         {/* Completed Plans */}
         {completedPlans.length > 0 && (
@@ -481,22 +493,17 @@ const Workouts = () => {
             
             <div className="grid gap-4">
               {completedPlans.map((plan) => (
-                <Card key={plan.id} className="border-green-200 bg-green-50/50">
+                <Card key={plan.id}>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                          <Trophy className="h-5 w-5 text-green-600" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-green-800">{plan.plan_title}</h4>
-                          <p className="text-sm text-green-600">
-                            Concluído em {format(new Date(plan.updated_at), 'dd MMM yyyy', { locale: ptBR })}
-                          </p>
-                        </div>
+                      <div>
+                        <h3 className="font-semibold">{plan.plan_title}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Concluído em {format(new Date(plan.start_date), 'dd MMM yyyy', { locale: ptBR })}
+                        </p>
                       </div>
-                      <Badge className="bg-green-600">
-                        {plan.target_days} dias completos
+                      <Badge variant="outline" className="text-green-600 border-green-600">
+                        ✓ Completo
                       </Badge>
                     </div>
                   </CardContent>
@@ -508,10 +515,10 @@ const Workouts = () => {
 
         {/* Empty State */}
         {workoutPlans.length === 0 && (
-          <Card className="text-center py-12">
-            <CardContent>
-              <Dumbbell className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">Nenhum Treino Ativo</h3>
+          <Card>
+            <CardContent className="py-12 text-center">
+              <Dumbbell className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+              <h3 className="text-xl font-semibold mb-2">Nenhum plano de treino</h3>
               <p className="text-muted-foreground mb-6">
                 Comece sua jornada fitness escolhendo um plano de treino!
               </p>
