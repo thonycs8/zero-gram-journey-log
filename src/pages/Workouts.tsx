@@ -365,15 +365,14 @@ const Workouts = () => {
                       </div>
 
                       {/* Enhanced Workout Tabs */}
-                      <Tabs defaultValue="session" className="w-full">
-                        <TabsList className="grid w-full grid-cols-4">
-                          <TabsTrigger value="session">Hoje</TabsTrigger>
-                          <TabsTrigger value="routine">Programa</TabsTrigger>
-                          <TabsTrigger value="analytics">Estatísticas</TabsTrigger>
-                          <TabsTrigger value="schedule">Calendario</TabsTrigger>
+                      <Tabs defaultValue="today" className="w-full">
+                        <TabsList className="grid w-full grid-cols-3">
+                          <TabsTrigger value="today">Hoje</TabsTrigger>
+                          <TabsTrigger value="week">Semana</TabsTrigger>
+                          <TabsTrigger value="progress">Progresso</TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="session" className="space-y-4">
+                        <TabsContent value="today" className="space-y-4">
                           <div className="p-4 bg-muted/50 rounded-lg">
                             <div className="flex items-center justify-between mb-4">
                               <div>
@@ -465,45 +464,9 @@ const Workouts = () => {
                           </div>
                         </TabsContent>
 
-                        <TabsContent value="routine" className="space-y-4">
-                          <div className="p-4 bg-muted/50 rounded-lg">
-                            <h4 className="font-medium mb-4">Programa Gamificado</h4>
-                            <WorkoutExerciseChecklist 
-                              workoutId={plan.plan_id} 
-                              userPlanId={plan.id}
-                              onCompleteWorkout={(completed, total) => {
-                                console.log(`Workout completed: ${completed}/${total} exercises`);
-                              }}
-                            />
-                          </div>
-                        </TabsContent>
-
-                        <TabsContent value="analytics" className="space-y-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Card>
-                              <CardHeader className="pb-2">
-                                <CardTitle className="text-sm">Progresso Semanal</CardTitle>
-                              </CardHeader>
-                              <CardContent>
-                                <div className="text-2xl font-bold text-primary">{Math.round(progress)}%</div>
-                                <div className="text-xs text-muted-foreground">Meta atual</div>
-                              </CardContent>
-                            </Card>
-                            <Card>
-                              <CardHeader className="pb-2">
-                                <CardTitle className="text-sm">Exercícios Hoje</CardTitle>
-                              </CardHeader>
-                              <CardContent>
-                                <div className="text-2xl font-bold text-green-600">{todaysStats.completedExercises}</div>
-                                <div className="text-xs text-muted-foreground">de {todaysStats.totalExercises} exercícios</div>
-                              </CardContent>
-                            </Card>
-                          </div>
-                        </TabsContent>
-
-                        <TabsContent value="schedule" className="space-y-4">
+                        <TabsContent value="week" className="space-y-4">
                           <div className="space-y-4">
-                            <h4 className="font-medium">Agenda da Semana</h4>
+                            <h4 className="font-medium">Agenda Semanal</h4>
                             <div className="grid gap-3">
                               {Array.from({ length: 7 }, (_, i) => {
                                 const dayDate = addDays(startOfWeek(new Date()), i);
@@ -520,22 +483,93 @@ const Workouts = () => {
                                           {isToday && <Badge variant="default" className="ml-2 text-xs">Hoje</Badge>}
                                         </div>
                                         <div className="text-xs text-muted-foreground">
-                                          {format(dayDate, 'dd MMM', { locale: ptBR })}
+                                          {format(dayDate, 'dd/MM', { locale: ptBR })}
                                         </div>
                                       </div>
-                                      <div className="text-right">
-                                        <div className="text-sm font-medium">
-                                          {dayExercises.length} exercícios
-                                        </div>
-                                        <div className="text-xs text-muted-foreground">
-                                          {dayExercises.length === 0 ? 'Descanso' : 'Treino'}
-                                        </div>
+                                      <div className="text-sm">
+                                        {dayExercises.length > 0 ? (
+                                          <div className="flex items-center gap-2">
+                                            <span className="text-primary font-medium">{dayExercises.length}</span>
+                                            <span className="text-muted-foreground">exercícios</span>
+                                          </div>
+                                        ) : (
+                                          <span className="text-muted-foreground text-xs">Descanso</span>
+                                        )}
                                       </div>
                                     </div>
+                                    {dayExercises.length > 0 && (
+                                      <div className="mt-2 pt-2 border-t border-border/50">
+                                        <div className="grid gap-1">
+                                          {dayExercises.slice(0, 3).map((ex, idx) => (
+                                            <div key={idx} className="text-xs text-muted-foreground flex items-center gap-1">
+                                              <div className="w-1 h-1 bg-primary rounded-full"></div>
+                                              {ex.exercise_name}
+                                            </div>
+                                          ))}
+                                          {dayExercises.length > 3 && (
+                                            <div className="text-xs text-muted-foreground">
+                                              +{dayExercises.length - 3} mais exercícios
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
                                   </Card>
                                 );
                               })}
                             </div>
+                          </div>
+                        </TabsContent>
+
+                        <TabsContent value="progress" className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Card>
+                              <CardHeader className="pb-2">
+                                <CardTitle className="text-sm">Progresso do Plano</CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="text-2xl font-bold text-primary">{Math.round(progress)}%</div>
+                                <div className="text-xs text-muted-foreground">
+                                  {checkpoints.filter(cp => cp.user_plan_id === plan.id && cp.completed).length} de {plan.target_days} dias
+                                </div>
+                                <Progress value={progress} className="mt-2" />
+                              </CardContent>
+                            </Card>
+                            <Card>
+                              <CardHeader className="pb-2">
+                                <CardTitle className="text-sm">Exercícios Hoje</CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="text-2xl font-bold text-green-600">{todaysStats.completedExercises}</div>
+                                <div className="text-xs text-muted-foreground">de {todaysStats.totalExercises} exercícios</div>
+                                {todaysStats.totalExercises > 0 && (
+                                  <Progress 
+                                    value={(todaysStats.completedExercises / todaysStats.totalExercises) * 100} 
+                                    className="mt-2" 
+                                  />
+                                )}
+                              </CardContent>
+                            </Card>
+                            <Card>
+                              <CardHeader className="pb-2">
+                                <CardTitle className="text-sm">Pontos Ganhos</CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="text-2xl font-bold text-yellow-600">{todaysStats.totalPoints}</div>
+                                <div className="text-xs text-muted-foreground">pontos hoje</div>
+                              </CardContent>
+                            </Card>
+                            <Card>
+                              <CardHeader className="pb-2">
+                                <CardTitle className="text-sm">Dias Restantes</CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="text-2xl font-bold text-blue-600">
+                                  {plan.target_days - checkpoints.filter(cp => cp.user_plan_id === plan.id && cp.completed).length}
+                                </div>
+                                <div className="text-xs text-muted-foreground">dias para completar</div>
+                              </CardContent>
+                            </Card>
                           </div>
                         </TabsContent>
                       </Tabs>
