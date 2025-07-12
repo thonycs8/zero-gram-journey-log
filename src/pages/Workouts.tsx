@@ -564,9 +564,15 @@ const Workouts = () => {
                           Concluído em {format(new Date(plan.start_date), 'dd MMM yyyy', { locale: ptBR })}
                         </p>
                       </div>
-                      <Badge variant="outline" className="text-green-600 border-green-600">
-                        ✓ Completo
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-green-600 border-green-600">
+                          ✓ Completo
+                        </Badge>
+                        <WorkoutCardManager 
+                          plan={plan} 
+                          onPlanUpdated={() => window.location.reload()} 
+                        />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
