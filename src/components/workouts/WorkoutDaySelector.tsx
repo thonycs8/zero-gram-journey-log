@@ -15,7 +15,11 @@ interface WorkoutDay {
 
 interface WorkoutDaySelectorProps {
   workoutPlan: any;
-  workoutDays: WorkoutDay[];
+  workoutDays: Array<{
+    dayNumber: number;
+    exercises: any[];
+    dayTitle: string;
+  }>;
   onSelectDay: (dayNumber: number) => void;
   selectedDay?: number;
   userProgress: any;
@@ -30,17 +34,13 @@ export const WorkoutDaySelector = ({
 }: WorkoutDaySelectorProps) => {
   const [hoveredDay, setHoveredDay] = useState<number | null>(null);
 
-  // Determine total days in the plan
-  const maxDays = Math.max(...workoutDays.map(day => day.dayNumber), 7); // At least 7 days
-  const planDays = Array.from({ length: maxDays }, (_, i) => {
-    const dayNumber = i + 1;
-    const dayData = workoutDays.find(day => day.dayNumber === dayNumber);
-    return {
-      dayNumber,
-      exercises: dayData?.exercises || [],
-      hasExercises: dayData ? dayData.exercises.length > 0 : false
-    };
-  });
+  // Use workoutDays from props instead of creating planDays
+  const planDays = workoutDays.map(day => ({
+    dayNumber: day.dayNumber,
+    exercises: day.exercises,
+    dayTitle: day.dayTitle,
+    hasExercises: day.exercises.length > 0
+  }));
 
   const getDayStatus = (dayNumber: number) => {
     const dayProgress = userProgress?.completedDays?.find((day: any) => day.planDay === dayNumber);
@@ -66,13 +66,12 @@ export const WorkoutDaySelector = ({
 
   const getNextAvailableDay = () => {
     const completedDays = userProgress?.completedDays?.map((day: any) => day.planDay) || [];
-    for (let i = 1; i <= maxDays; i++) {
-      const planDay = planDays.find(d => d.dayNumber === i);
-      if (planDay?.hasExercises && !completedDays.includes(i)) {
-        return i;
+    for (const day of planDays) {
+      if (day.hasExercises && !completedDays.includes(day.dayNumber)) {
+        return day.dayNumber;
       }
     }
-    return 1; // Se todos estão completos, volta ao primeiro
+    return planDays.find(d => d.hasExercises)?.dayNumber || 1; // Se todos estão completos, volta ao primeiro
   };
 
   return (
@@ -87,7 +86,7 @@ export const WorkoutDaySelector = ({
         </p>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mb-4 animate-fade-in">
           {planDays.map((day) => {
             const status = getDayStatus(day.dayNumber);
             const dayProgress = userProgress?.completedDays?.find((d: any) => d.planDay === day.dayNumber);
@@ -105,6 +104,9 @@ export const WorkoutDaySelector = ({
                 <div className="text-center">
                   <div className="font-semibold text-lg mb-1">
                     Dia {day.dayNumber}
+                  </div>
+                  <div className="text-xs text-muted-foreground mb-2 font-medium">
+                    {day.dayTitle}
                   </div>
                   <div className="text-xs text-muted-foreground mb-2">
                     {day.exercises.length} exercícios
@@ -148,7 +150,9 @@ export const WorkoutDaySelector = ({
                 {/* Preview dos exercícios ao hover */}
                 {hoveredDay === day.dayNumber && day.hasExercises && (
                   <div className="absolute top-full left-0 right-0 mt-2 p-3 bg-card border rounded-lg shadow-lg z-10 max-w-xs">
-                    <div className="text-sm font-medium mb-2">Exercícios do Dia {day.dayNumber}:</div>
+                    <div className="text-sm font-medium mb-2">
+                      Dia {day.dayNumber}: {day.dayTitle}
+                    </div>
                     <div className="space-y-1 text-xs text-muted-foreground">
                       {day.exercises.slice(0, 3).map((exercise, idx) => (
                         <div key={idx}>• {exercise.exercise_name}</div>
