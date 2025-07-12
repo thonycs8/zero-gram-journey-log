@@ -101,11 +101,52 @@ export const useDetailedPlans = () => {
     }
   };
 
-  // Get exercises for a specific workout plan and day
-  const getExercisesForDay = (workoutPlanId: string, dayOfWeek: number): WorkoutExercise[] => {
+  // Get exercises for a specific workout plan and day (using plan day instead of day_of_week)
+  const getExercisesForDay = (workoutPlanId: string, planDay: number): WorkoutExercise[] => {
     return workoutExercises.filter(
-      exercise => exercise.workout_plan_id === workoutPlanId && exercise.day_of_week === dayOfWeek
+      exercise => exercise.workout_plan_id === workoutPlanId && exercise.day_of_week === planDay
     );
+  };
+
+  // Get all exercises for a workout plan grouped by day
+  const getWorkoutPlanDays = (workoutPlanId: string) => {
+    const planExercises = workoutExercises.filter(ex => ex.workout_plan_id === workoutPlanId);
+    const days: { [key: number]: WorkoutExercise[] } = {};
+    
+    planExercises.forEach(exercise => {
+      const day = exercise.day_of_week || 1;
+      if (!days[day]) days[day] = [];
+      days[day].push(exercise);
+    });
+    
+    return Object.keys(days).map(dayNum => ({
+      dayNumber: parseInt(dayNum),
+      exercises: days[parseInt(dayNum)],
+      dayTitle: getDayTitle(parseInt(dayNum), days[parseInt(dayNum)])
+    })).sort((a, b) => a.dayNumber - b.dayNumber);
+  };
+
+  // Generate day title based on exercises
+  const getDayTitle = (dayNumber: number, exercises: WorkoutExercise[]): string => {
+    if (!exercises || exercises.length === 0) return 'Descanso';
+    
+    // Try to determine muscle group from exercise names
+    const exerciseNames = exercises.map(ex => ex.exercise_name.toLowerCase());
+    
+    if (exerciseNames.some(name => name.includes('peito') || name.includes('supino') || name.includes('triceps'))) {
+      return 'Peito e Tríceps';
+    }
+    if (exerciseNames.some(name => name.includes('costas') || name.includes('puxada') || name.includes('biceps'))) {
+      return 'Costas e Bíceps';
+    }
+    if (exerciseNames.some(name => name.includes('perna') || name.includes('agacha') || name.includes('gluteo'))) {
+      return 'Pernas e Glúteos';
+    }
+    if (exerciseNames.some(name => name.includes('ombro') || name.includes('abdome') || name.includes('desenvolvimento'))) {
+      return 'Ombros e Abdome';
+    }
+    
+    return `${exercises.length} exercícios`;
   };
 
   // Get meals for a specific meal plan and day
@@ -141,6 +182,7 @@ export const useDetailedPlans = () => {
     mealPlanItems,
     loading,
     getExercisesForDay,
+    getWorkoutPlanDays,
     getMealsForDay,
     getWorkoutPlan,
     getMealPlan,

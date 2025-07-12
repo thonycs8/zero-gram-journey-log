@@ -14,7 +14,11 @@ import { ptBR } from 'date-fns/locale';
 interface ActiveWorkoutManagerProps {
   userPlan: any;
   workoutDetails: any;
-  allExercises: any[];
+  planDays: Array<{
+    dayNumber: number;
+    exercises: any[];
+    dayTitle: string;
+  }>;
   userProgress: any;
   onCompleteWorkout: (dayNumber: number, exercises: any[]) => Promise<void>;
   onStartWorkout: (dayNumber: number) => Promise<void>;
@@ -24,7 +28,7 @@ interface ActiveWorkoutManagerProps {
 export const ActiveWorkoutManager = ({
   userPlan,
   workoutDetails,
-  allExercises,
+  planDays,
   userProgress,
   onCompleteWorkout,
   onStartWorkout,
@@ -49,31 +53,11 @@ export const ActiveWorkoutManager = ({
     return () => clearInterval(interval);
   }, [sessionStartTime, activeSession]);
 
-  // Agrupar exercícios por dia do plano
-  const groupExercisesByDay = () => {
-    const days: { [key: number]: any[] } = {};
-    allExercises.forEach(exercise => {
-      // Use order_index or a custom day mapping instead of day_of_week
-      // If the exercise has a day_of_week, map it to sequential plan days
-      let planDay = exercise.day_of_week || 1;
-      
-      // Convert day_of_week (0-6) to plan days (1-7) if needed
-      if (exercise.day_of_week !== undefined) {
-        planDay = exercise.day_of_week === 0 ? 7 : exercise.day_of_week; // Sunday becomes day 7
-      }
-      
-      if (!days[planDay]) days[planDay] = [];
-      days[planDay].push(exercise);
-    });
-    
-    return Object.keys(days).map(dayNum => ({
-      dayNumber: parseInt(dayNum),
-      exercises: days[parseInt(dayNum)]
-    }));
-  };
-
-  const workoutDays = groupExercisesByDay();
-  const selectedDayExercises = workoutDays.find(day => day.dayNumber === selectedDay)?.exercises || [];
+  // Use planDays from props instead of grouping
+  const workoutDays = planDays;
+  const selectedDayData = workoutDays.find(day => day.dayNumber === selectedDay);
+  const selectedDayExercises = selectedDayData?.exercises || [];
+  const selectedDayTitle = selectedDayData?.dayTitle || `Dia ${selectedDay}`;
 
   const handleSelectDay = (dayNumber: number) => {
     setSelectedDay(dayNumber);
@@ -213,7 +197,7 @@ export const ActiveWorkoutManager = ({
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <Dumbbell className="h-5 w-5" />
-                  Treino em Andamento - Dia {activeSession.dayNumber}
+                  Dia {activeSession.dayNumber}: {selectedDayTitle}
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">
                   {sessionExercises.length} exercícios | Iniciado às {format(sessionStartTime!, 'HH:mm')}
@@ -275,8 +259,11 @@ export const ActiveWorkoutManager = ({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              Dia {selectedDay} - {selectedDayExercises.length} Exercícios
+              Dia {selectedDay}: {selectedDayTitle}
             </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              {selectedDayExercises.length} exercícios programados
+            </p>
           </CardHeader>
           <CardContent>
             <div className="space-y-3 mb-4">

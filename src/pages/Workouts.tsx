@@ -32,6 +32,7 @@ const Workouts = () => {
   const {
     workoutExercises,
     getExercisesForDay,
+    getWorkoutPlanDays,
     getWorkoutPlan,
     loading: plansLoading
   } = useDetailedPlans();
@@ -382,7 +383,7 @@ const Workouts = () => {
                           <ActiveWorkoutManager
                             userPlan={plan}
                             workoutDetails={workoutDetails}
-                            allExercises={workoutExercises.filter(ex => ex.workout_plan_id === plan.plan_id.toString())}
+                            planDays={getWorkoutPlanDays(plan.plan_id.toString())}
                             userProgress={{
                               completedDays: checkpoints.filter(cp => cp.user_plan_id === plan.id && cp.completed)
                                 .map(cp => ({ planDay: 1, completedDate: cp.checkpoint_date, completed: true }))
