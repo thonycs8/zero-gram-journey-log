@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { DetailedExerciseCard } from './DetailedExerciseCard';
+import { SimpleExerciseCard } from './SimpleExerciseCard';
 import { WorkoutDaySelector } from './WorkoutDaySelector';
 import { Play, Pause, CheckCircle, Trophy, Timer, Dumbbell, Zap, Calendar } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -36,6 +36,7 @@ export const ActiveWorkoutManager = ({
   const [sessionExercises, setSessionExercises] = useState<any[]>([]);
   const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set());
 
   // Timer para cronometrar o treino
   useEffect(() => {
@@ -123,21 +124,21 @@ export const ActiveWorkoutManager = ({
     notes?: string
   ) => {
     try {
-      await onCompleteExercise(exerciseId, setsCompleted, repsCompleted, weightUsed, notes);
-      
-      // Atualizar estado local
+      // Mark exercise as completed in local state
       setSessionExercises(prev => 
         prev.map(ex => 
           ex.id === exerciseId 
-            ? { ...ex, completed: true, setsCompleted, repsCompleted, weightUsed, notes }
+            ? { ...ex, completed: true, setsCompleted, repsCompleted, weightUsed, exerciseNotes: notes }
             : ex
         )
       );
       
-      toast({
-        title: "Exercício Concluído! ✅",
-        description: `+5 pontos ganhos`,
-      });
+      // Add to completed exercises set
+      setCompletedExercises(prev => new Set([...prev, exerciseId]));
+      
+      // Call the parent handler which should create/update exercise checkpoint
+      await onCompleteExercise(exerciseId, setsCompleted, repsCompleted, weightUsed, notes);
+      
     } catch (error) {
       console.error('Error completing exercise:', error);
     }
@@ -225,7 +226,7 @@ export const ActiveWorkoutManager = ({
           <CardContent className="p-6">
             <div className="space-y-4">
               {sessionExercises.map((exercise) => (
-                <DetailedExerciseCard
+                <SimpleExerciseCard
                   key={exercise.id}
                   exercise={exercise}
                   onComplete={handleCompleteExerciseInSession}

@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAuth } from '@/contexts/AuthContext';
 import { useGamification } from '@/hooks/useGamification';
 import { useDetailedPlans } from '@/hooks/useDetailedPlans';
 import { useDetailedCheckpoints } from '@/hooks/useDetailedCheckpoints';
@@ -18,6 +19,7 @@ import { ptBR } from 'date-fns/locale';
 import { ActiveWorkoutManager } from '@/components/workouts/ActiveWorkoutManager';
 
 const Workouts = () => {
+  const { user } = useAuth();
   const { 
     userPlans, 
     checkpoints, 
@@ -100,13 +102,45 @@ const Workouts = () => {
   };
 
   const handleCompleteExercise = async (
-    checkpointId: string,
+    exerciseId: string,
     setsCompleted: number,
     repsCompleted?: string,
     weightUsed?: number,
     notes?: string
   ) => {
-    await completeExercise(checkpointId, setsCompleted, repsCompleted, weightUsed, notes);
+    // First check if an exercise checkpoint already exists for today
+    const today = new Date().toISOString().split('T')[0];
+    const existingCheckpoint = exerciseCheckpoints.find(
+      checkpoint => checkpoint.exercise_id === exerciseId && checkpoint.workout_date === today
+    );
+
+    if (existingCheckpoint) {
+      // Update existing checkpoint
+      await completeExercise(existingCheckpoint.id, setsCompleted, repsCompleted, weightUsed, notes);
+    } else {
+      // Find the exercise details
+      const exercise = workoutExercises.find(ex => ex.id === exerciseId);
+      if (exercise && user) {
+        // Create new exercise checkpoint
+        const userPlan = workoutPlans.find(plan => plan.plan_id.toString() === exercise.workout_plan_id);
+        if (userPlan) {
+          const checkpoints = await initializeWorkoutSession(
+            userPlan.id,
+            exercise.workout_plan_id,
+            `${exercise.exercise_name} - Treino Individual`,
+            [{
+              exercise_id: exerciseId,
+              exercise_name: exercise.exercise_name,
+              total_sets: exercise.sets || 3
+            }]
+          );
+          
+          if (checkpoints?.checkpoints?.[0]) {
+            await completeExercise(checkpoints.checkpoints[0].id, setsCompleted, repsCompleted, weightUsed, notes);
+          }
+        }
+      }
+    }
   };
 
   const handleExerciseToggle = (exerciseId: string) => {
