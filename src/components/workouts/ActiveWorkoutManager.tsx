@@ -178,16 +178,14 @@ export const ActiveWorkoutManager = ({
 
   return (
     <div className="space-y-6">
-      {/* Seletor de Dia */}
-      {!activeSession && (
-        <WorkoutDaySelector
-          workoutPlan={workoutDetails}
-          workoutDays={workoutDays}
-          onSelectDay={handleSelectDay}
-          selectedDay={selectedDay}
-          userProgress={userProgress}
-        />
-      )}
+      {/* Seletor de Dia - sempre visível */}
+      <WorkoutDaySelector
+        workoutPlan={workoutDetails}
+        workoutDays={workoutDays}
+        onSelectDay={handleSelectDay}
+        selectedDay={selectedDay}
+        userProgress={userProgress}
+      />
 
       {/* Sessão Ativa */}
       {activeSession && (

@@ -168,26 +168,6 @@ export const WorkoutDaySelector = ({
             );
           })}
         </div>
-        
-        <div className="flex flex-wrap gap-2 justify-center">
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => onSelectDay(getNextAvailableDay())}
-          >
-            <Play className="h-4 w-4 mr-1" />
-            Próximo Dia Disponível
-          </Button>
-          
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => onSelectDay(1)}
-          >
-            <Calendar className="h-4 w-4 mr-1" />
-            Reiniciar do Dia 1
-          </Button>
-        </div>
       </CardContent>
     </Card>
   );
