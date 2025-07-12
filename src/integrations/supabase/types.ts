@@ -839,6 +839,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_levels: {
+        Row: {
+          benefits: string[] | null
+          color: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          level: number
+          max_points: number | null
+          min_points: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          benefits?: string[] | null
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          level: number
+          max_points?: number | null
+          min_points: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          benefits?: string[] | null
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          level?: number
+          max_points?: number | null
+          min_points?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_meal_schedule: {
         Row: {
           created_at: string
@@ -1280,6 +1322,23 @@ export type Database = {
           completed_days: number
           progress_percentage: number
           total_points: number
+        }[]
+      }
+      get_user_level: {
+        Args: { user_total_points: number }
+        Returns: {
+          level_info: Json
+        }[]
+      }
+      get_weekly_stats: {
+        Args: { p_user_id: string }
+        Returns: {
+          total_workouts: number
+          completed_workouts: number
+          total_exercises: number
+          completed_exercises: number
+          total_points: number
+          streak_days: number
         }[]
       }
       has_role: {

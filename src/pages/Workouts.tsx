@@ -10,10 +10,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useGamification } from '@/hooks/useGamification';
 import { useDetailedPlans } from '@/hooks/useDetailedPlans';
 import { useDetailedCheckpoints } from '@/hooks/useDetailedCheckpoints';
+import { useUserLevel } from '@/hooks/useUserLevel';
 import { DetailedExerciseCard } from '@/components/workouts/DetailedExerciseCard';
 import { WorkoutExerciseChecklist } from '@/components/workouts/WorkoutExerciseChecklist';
 import { WorkoutCardManager } from '@/components/workouts/WorkoutCardManager';
-import { CheckCircle, Calendar, Target, Dumbbell, Clock, Trophy, Plus, Timer, Zap, Play, BarChart3 } from 'lucide-react';
+import { UserLevelCard } from '@/components/gamification/UserLevelCard';
+import { WorkoutProgressDashboard } from '@/components/gamification/WorkoutProgressDashboard';
+import { CheckCircle, Calendar, Target, Dumbbell, Clock, Trophy, Plus, Timer, Zap, Play, BarChart3, Crown } from 'lucide-react';
 import { format, addDays, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ActiveWorkoutManager } from '@/components/workouts/ActiveWorkoutManager';
@@ -270,6 +273,21 @@ const Workouts = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Gamification Dashboard */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1">
+            <UserLevelCard />
+          </div>
+          <div className="lg:col-span-2">
+            {activePlans.length > 0 && (
+              <WorkoutProgressDashboard 
+                userPlan={activePlans[0]} 
+                onViewDetails={() => {}}
+              />
+            )}
+          </div>
         </div>
 
         {/* Active Workout Plans */}
