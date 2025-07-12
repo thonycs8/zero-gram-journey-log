@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, Timer, Trophy, Zap, Star, Target, Apple, Utensils } from 'lucide-react';
+import { CheckCircle, Timer, Trophy, Zap, Star, Target, Apple, Utensils, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 
@@ -29,9 +29,9 @@ interface MealChecklistGamifiedProps {
 
 export const MealChecklistGamified = ({ nutritionPlanId, onCompleteMeal }: MealChecklistGamifiedProps) => {
   const { toast } = useToast();
-  const [completedItems, setCompletedItems] = useState<{ [key: string]: boolean }>({});
-  const [currentDay, setCurrentDay] = useState(0);
-  const [showCelebration, setShowCelebration] = useState(false);
+  const [completedMeals, setCompletedMeals] = useState<{ [key: string]: boolean }>({});
+  const [showPlanConfirmation, setShowPlanConfirmation] = useState(false);
+  const [planCompleted, setPlanCompleted] = useState(false);
 
   const getMealPlan = (planId: number) => {
     switch (planId) {
@@ -206,16 +206,16 @@ export const MealChecklistGamified = ({ nutritionPlanId, onCompleteMeal }: MealC
 
   const meals = getMealPlan(nutritionPlanId);
 
-  const handleItemToggle = (itemId: string) => {
+  const handleMealToggle = (mealId: string) => {
     const newState = {
-      ...completedItems,
-      [itemId]: !completedItems[itemId]
+      ...completedMeals,
+      [mealId]: !completedMeals[mealId]
     };
     
-    setCompletedItems(newState);
+    setCompletedMeals(newState);
 
-    // Check if item was just completed
-    if (!completedItems[itemId]) {
+    // Check if meal was just completed
+    if (!completedMeals[mealId]) {
       // Show celebration animation
       confetti({
         particleCount: 30,
@@ -224,23 +224,24 @@ export const MealChecklistGamified = ({ nutritionPlanId, onCompleteMeal }: MealC
       });
 
       toast({
-        title: "Item Concluído! 🎉",
-        description: "+2 pontos ganhos",
+        title: "Refeição Concluída! 🎉",
+        description: "+10 pontos ganhos",
         duration: 2000,
       });
     }
 
-    // Check if all items in current meal are completed
-    const currentMealItems = meals.flatMap((meal, mealIndex) => 
-      meal.items.map((_, itemIndex) => `${mealIndex}-${itemIndex}`)
-    );
-    
-    const completedCount = currentMealItems.filter(id => 
-      id === itemId ? !completedItems[itemId] : newState[id]
-    ).length;
+    // Check if all meals are completed to show plan confirmation
+    const completedCount = Object.values(newState).filter(Boolean).length;
+    if (completedCount === meals.length && !planCompleted) {
+      setShowPlanConfirmation(true);
+    }
+  };
 
-    if (completedCount === currentMealItems.length) {
-      setShowCelebration(true);
+  const handlePlanCompletion = (completed: boolean) => {
+    setShowPlanConfirmation(false);
+    setPlanCompleted(completed);
+
+    if (completed) {
       confetti({
         particleCount: 100,
         spread: 70,
@@ -249,39 +250,28 @@ export const MealChecklistGamified = ({ nutritionPlanId, onCompleteMeal }: MealC
 
       toast({
         title: "Plano Alimentar Concluído! 🏆",
-        description: "+50 pontos de bônus ganhos",
+        description: "+50 pontos de bônus ganhos por seguir o plano completo",
         duration: 3000,
       });
 
       // Call parent callback
-      onCompleteMeal(completedCount, currentMealItems.length);
+      onCompleteMeal(meals.length, meals.length);
     }
   };
 
   const getProgress = () => {
-    const totalItems = meals.reduce((acc, meal) => acc + meal.items.length, 0);
-    const completed = meals.reduce((acc, meal, mealIndex) => {
-      return acc + meal.items.filter((_, itemIndex) => 
-        completedItems[`${mealIndex}-${itemIndex}`]
-      ).length;
-    }, 0);
-    return totalItems > 0 ? (completed / totalItems) * 100 : 0;
+    const completed = Object.values(completedMeals).filter(Boolean).length;
+    return meals.length > 0 ? (completed / meals.length) * 100 : 0;
   };
 
   const getCompletedCount = () => {
-    return meals.reduce((acc, meal, mealIndex) => {
-      return acc + meal.items.filter((_, itemIndex) => 
-        completedItems[`${mealIndex}-${itemIndex}`]
-      ).length;
-    }, 0);
-  };
-
-  const getTotalItems = () => {
-    return meals.reduce((acc, meal) => acc + meal.items.length, 0);
+    return Object.values(completedMeals).filter(Boolean).length;
   };
 
   const getTotalPoints = () => {
-    return getCompletedCount() * 2 + (getProgress() === 100 ? 50 : 0);
+    const mealPoints = getCompletedCount() * 10;
+    const planBonus = planCompleted ? 50 : 0;
+    return mealPoints + planBonus;
   };
 
   const getTotalCalories = () => {
@@ -322,7 +312,7 @@ export const MealChecklistGamified = ({ nutritionPlanId, onCompleteMeal }: MealC
                 Programa Alimentar
               </CardTitle>
               <p className="text-muted-foreground text-sm mt-1">
-                Complete cada item da alimentação para ganhar pontos e conquistar objetivos
+                Complete cada refeição para ganhar pontos e conquistar objetivos
               </p>
             </div>
             <div className="flex items-center gap-4">
@@ -331,8 +321,8 @@ export const MealChecklistGamified = ({ nutritionPlanId, onCompleteMeal }: MealC
                 <div className="text-xs text-muted-foreground">Pontos</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">{getCompletedCount()}/{getTotalItems()}</div>
-                <div className="text-xs text-muted-foreground">Itens</div>
+                <div className="text-2xl font-bold text-orange-600">{getCompletedCount()}/{meals.length}</div>
+                <div className="text-xs text-muted-foreground">Refeições</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">{getTotalCalories()}</div>
@@ -355,11 +345,11 @@ export const MealChecklistGamified = ({ nutritionPlanId, onCompleteMeal }: MealC
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Zap className="h-3 w-3" />
-                +2 pontos por item
+                +10 pontos por refeição
               </span>
               <span className="flex items-center gap-1">
                 <Trophy className="h-3 w-3" />
-                +50 bônus ao completar
+                +50 bônus por seguir o plano
               </span>
             </div>
           </div>
@@ -369,111 +359,134 @@ export const MealChecklistGamified = ({ nutritionPlanId, onCompleteMeal }: MealC
       {/* Meal checklist */}
       <div className="space-y-4">
         {meals.map((meal, mealIndex) => {
-          const completedInMeal = meal.items.filter((_, itemIndex) => 
-            completedItems[`${mealIndex}-${itemIndex}`]
-          ).length;
-          const mealProgress = (completedInMeal / meal.items.length) * 100;
+          const mealId = `meal-${mealIndex}`;
+          const isCompleted = completedMeals[mealId];
           
           return (
-            <Card key={mealIndex}>
+            <Card key={mealIndex} className={`${isCompleted ? 'ring-2 ring-green-500 bg-green-50/50' : ''}`}>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <Utensils className="h-4 w-4" />
-                      {meal.name}
-                    </CardTitle>
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
-                      <span className="flex items-center gap-1">
-                        <Timer className="h-3 w-3" />
-                        {meal.time}
-                      </span>
-                      <span>{meal.totalCalories} kcal</span>
-                      <span>{completedInMeal}/{meal.items.length} itens</span>
-                    </div>
-                  </div>
-                  <Badge variant={mealProgress === 100 ? "default" : "outline"}>
-                    {Math.round(mealProgress)}%
-                  </Badge>
-                </div>
-                <Progress value={mealProgress} className="h-2" />
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {meal.items.map((item, itemIndex) => {
-                  const itemId = `${mealIndex}-${itemIndex}`;
-                  const isCompleted = completedItems[itemId];
-                  
-                  return (
-                    <div
-                      key={itemIndex}
-                      className={`p-3 rounded-lg border transition-all duration-200 ${
-                        isCompleted 
-                          ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800' 
-                          : 'bg-background hover:bg-muted/50'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <Checkbox
-                          id={itemId}
-                          checked={isCompleted}
-                          onCheckedChange={() => handleItemToggle(itemId)}
-                          className="mt-1"
-                        />
-                        <div className="flex-1 space-y-2">
-                          <div className="flex items-center justify-between">
-                            <label 
-                              htmlFor={itemId}
-                              className={`font-medium cursor-pointer ${
-                                isCompleted ? 'line-through text-muted-foreground' : ''
-                              }`}
-                            >
-                              {item.name}
-                            </label>
-                            <div className="flex items-center gap-2">
-                              {isCompleted && (
-                                <Badge variant="secondary" className="bg-green-100 text-green-800">
-                                  <CheckCircle className="h-3 w-3 mr-1" />
-                                  +2 pts
-                                </Badge>
-                              )}
-                              <Badge className={getTypeColor(item.type)}>
-                                {getTypeIcon(item.type)} {item.type}
-                              </Badge>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <span>{item.quantity}</span>
-                            <span className="flex items-center gap-1">
-                              <Zap className="h-3 w-3" />
-                              {item.calories} kcal
-                            </span>
-                          </div>
-                        </div>
+                  <div className="flex items-center gap-3">
+                    <Checkbox
+                      id={mealId}
+                      checked={isCompleted}
+                      onCheckedChange={() => handleMealToggle(mealId)}
+                      className="mt-1"
+                    />
+                    <div>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Utensils className="h-4 w-4" />
+                        {meal.name}
+                      </CardTitle>
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
+                        <span className="flex items-center gap-1">
+                          <Timer className="h-3 w-3" />
+                          {meal.time}
+                        </span>
+                        <span>{meal.totalCalories} kcal</span>
+                        <span>{meal.items.length} itens</span>
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {isCompleted && (
+                      <Badge variant="secondary" className="bg-green-100 text-green-800">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        +10 pts
+                      </Badge>
+                    )}
+                    <Badge variant={isCompleted ? "default" : "outline"}>
+                      {isCompleted ? 'Concluída' : 'Pendente'}
+                    </Badge>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="text-sm text-muted-foreground mb-3">
+                  Itens desta refeição:
+                </div>
+                {meal.items.map((item, itemIndex) => (
+                  <div
+                    key={itemIndex}
+                    className={`p-3 rounded-lg border transition-all duration-200 ${
+                      isCompleted 
+                        ? 'bg-green-50 border-green-200 opacity-75' 
+                        : 'bg-background'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className={`font-medium ${isCompleted ? 'text-green-700' : ''}`}>
+                          {item.name}
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+                          <span>{item.quantity}</span>
+                          <span className="flex items-center gap-1">
+                            <Zap className="h-3 w-3" />
+                            {item.calories} kcal
+                          </span>
+                        </div>
+                      </div>
+                      <Badge className={getTypeColor(item.type)}>
+                        {getTypeIcon(item.type)} {item.type}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
               </CardContent>
             </Card>
           );
         })}
       </div>
 
+      {/* Plan Completion Confirmation */}
+      {showPlanConfirmation && (
+        <Card className="bg-gradient-to-r from-yellow-100 to-orange-100 border-yellow-300">
+          <CardContent className="p-6 text-center">
+            <div className="space-y-4">
+              <div className="text-4xl">🤔</div>
+              <h3 className="text-xl font-bold text-yellow-800">
+                Você seguiu o plano alimentar hoje?
+              </h3>
+              <p className="text-yellow-700">
+                Todas as refeições foram marcadas como concluídas. Você realmente seguiu o plano conforme recomendado?
+              </p>
+              <div className="flex gap-3 justify-center">
+                <Button 
+                  onClick={() => handlePlanCompletion(true)}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Sim, segui o plano!
+                </Button>
+                <Button 
+                  onClick={() => handlePlanCompletion(false)}
+                  variant="outline"
+                  className="border-yellow-400 text-yellow-700 hover:bg-yellow-50"
+                >
+                  <AlertCircle className="h-4 w-4 mr-2" />
+                  Não completamente
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Completion celebration */}
-      {showCelebration && (
-        <Card className="bg-gradient-to-r from-green-100 to-blue-100 border-green-300 dark:from-green-950 dark:to-blue-950 dark:border-green-700">
+      {planCompleted && (
+        <Card className="bg-gradient-to-r from-green-100 to-blue-100 border-green-300">
           <CardContent className="p-6 text-center">
             <div className="space-y-3">
               <div className="text-4xl">🎉</div>
-              <h3 className="text-xl font-bold text-green-800 dark:text-green-200">
+              <h3 className="text-xl font-bold text-green-800">
                 Parabéns! Plano Alimentar Concluído!
               </h3>
-              <p className="text-green-700 dark:text-green-300">
-                Você ganhou {getTotalPoints()} pontos totais hoje!
+              <p className="text-green-700">
+                Você ganhou {getTotalPoints()} pontos totais hoje seguindo seu plano alimentar!
               </p>
               <Button 
-                onClick={() => setShowCelebration(false)}
+                onClick={() => setPlanCompleted(false)}
                 className="mt-4"
               >
                 Continuar
@@ -484,19 +497,19 @@ export const MealChecklistGamified = ({ nutritionPlanId, onCompleteMeal }: MealC
       )}
 
       {/* Help for ADHD users */}
-      <Card className="bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800">
+      <Card className="bg-blue-50 border-blue-200">
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
             <div className="text-2xl">💡</div>
             <div className="space-y-1">
-              <h4 className="font-medium text-blue-800 dark:text-blue-200">
+              <h4 className="font-medium text-blue-800">
                 Dicas para Manter o Foco na Alimentação
               </h4>
-              <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                <li>• Marque cada item conforme consome</li>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• Marque cada refeição conforme realiza</li>
                 <li>• Use o sistema de pontos como motivação</li>
                 <li>• Prepare os alimentos com antecedência</li>
-                <li>• Celebre cada refeição completa!</li>
+                <li>• Seja honesto na confirmação do plano!</li>
                 <li>• Use lembretes para os horários das refeições</li>
               </ul>
             </div>

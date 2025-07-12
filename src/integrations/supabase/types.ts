@@ -1019,6 +1019,56 @@ export type Database = {
         }
         Relationships: []
       }
+      workout_execution_history: {
+        Row: {
+          created_at: string
+          execution_date: string
+          exercise_name: string
+          id: string
+          notes: string | null
+          points_earned: number
+          reps_completed: string | null
+          sets_completed: number
+          user_id: string
+          weight_used: number | null
+          workout_schedule_id: string
+        }
+        Insert: {
+          created_at?: string
+          execution_date: string
+          exercise_name: string
+          id?: string
+          notes?: string | null
+          points_earned?: number
+          reps_completed?: string | null
+          sets_completed?: number
+          user_id: string
+          weight_used?: number | null
+          workout_schedule_id: string
+        }
+        Update: {
+          created_at?: string
+          execution_date?: string
+          exercise_name?: string
+          id?: string
+          notes?: string | null
+          points_earned?: number
+          reps_completed?: string | null
+          sets_completed?: number
+          user_id?: string
+          weight_used?: number | null
+          workout_schedule_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workout_execution_history_workout_schedule_id_fkey"
+            columns: ["workout_schedule_id"]
+            isOneToOne: false
+            referencedRelation: "workout_schedule"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workout_exercises: {
         Row: {
           created_at: string
@@ -1105,6 +1155,62 @@ export type Database = {
         }
         Relationships: []
       }
+      workout_schedule: {
+        Row: {
+          completed_date: string | null
+          completed_exercises: number
+          created_at: string
+          id: string
+          is_completed: boolean
+          notes: string | null
+          plan_day_number: number
+          points_earned: number
+          scheduled_date: string
+          total_exercises: number
+          updated_at: string
+          user_id: string
+          user_plan_id: string
+        }
+        Insert: {
+          completed_date?: string | null
+          completed_exercises?: number
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          notes?: string | null
+          plan_day_number: number
+          points_earned?: number
+          scheduled_date?: string
+          total_exercises?: number
+          updated_at?: string
+          user_id: string
+          user_plan_id: string
+        }
+        Update: {
+          completed_date?: string | null
+          completed_exercises?: number
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          notes?: string | null
+          plan_day_number?: number
+          points_earned?: number
+          scheduled_date?: string
+          total_exercises?: number
+          updated_at?: string
+          user_id?: string
+          user_plan_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workout_schedule_user_plan_id_fkey"
+            columns: ["user_plan_id"]
+            isOneToOne: false
+            referencedRelation: "user_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workout_sessions: {
         Row: {
           calories_burned: number | null
@@ -1167,6 +1273,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_plan_progress: {
+        Args: { p_user_plan_id: string }
+        Returns: {
+          total_days: number
+          completed_days: number
+          progress_percentage: number
+          total_points: number
+        }[]
+      }
       has_role: {
         Args: {
           _user_id: string
