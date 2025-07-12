@@ -15,6 +15,7 @@ import { WorkoutCardManager } from '@/components/workouts/WorkoutCardManager';
 import { CheckCircle, Calendar, Target, Dumbbell, Clock, Trophy, Plus, Timer, Zap, Play, BarChart3 } from 'lucide-react';
 import { format, addDays, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { ActiveWorkoutManager } from '@/components/workouts/ActiveWorkoutManager';
 
 const Workouts = () => {
   const { 
@@ -27,6 +28,7 @@ const Workouts = () => {
   } = useGamification();
 
   const {
+    workoutExercises,
     getExercisesForDay,
     getWorkoutPlan,
     loading: plansLoading
@@ -343,75 +345,22 @@ const Workouts = () => {
                         </TabsList>
 
                         <TabsContent value="hoje" className="space-y-4">
-                          <div className="p-4 bg-muted/50 rounded-lg">
-                            <div className="flex items-center justify-between mb-4">
-                              <div>
-                                <h4 className="font-medium">{getDayName(currentDay)} - Treino do Dia</h4>
-                                <p className="text-sm text-muted-foreground">
-                                  {todaysExercises.length} exercícios programados
-                                </p>
-                              </div>
-                              <div className="flex gap-2">
-                                {!activeWorkoutSession && todaysExercises.length > 0 && (
-                                  <Button
-                                    onClick={() => handleStartWorkout(plan)}
-                                    variant="default"
-                                    size="sm"
-                                  >
-                                    <Play className="h-4 w-4 mr-2" />
-                                    Iniciar Treino
-                                  </Button>
-                                )}
-                                <Button
-                                  onClick={() => handleCompleteCheckpoint(plan.id)}
-                                  disabled={todayCompleted}
-                                  variant={todayCompleted ? "outline" : "secondary"}
-                                  size="sm"
-                                >
-                                  <CheckCircle className="h-4 w-4 mr-2" />
-                                  {todayCompleted ? 'Concluído!' : 'Finalizar Treino'}
-                                </Button>
-                              </div>
-                            </div>
-
-                            {todaysExercises.length > 0 ? (
-                              <div className="space-y-4">
-                                {exercisesBySession.has(plan.id) ? (
-                                  <div className="space-y-3">
-                                    <div className="text-sm font-medium text-green-600 mb-3">
-                                      ✨ Modo Treino Detalhado Ativado
-                                    </div>
-                                    {exercisesBySession.get(plan.id)?.map((exerciseCheckpoint) => (
-                                      <DetailedExerciseCard
-                                        key={exerciseCheckpoint.id}
-                                        exercise={exerciseCheckpoint}
-                                        onComplete={handleCompleteExercise}
-                                      />
-                                    ))}
-                                  </div>
-                                ) : (
-                                  <div className="space-y-3">
-                                    <div className="text-sm font-medium text-primary mb-3">
-                                      🎯 Programa Gamificado - Marque cada exercício como concluído
-                                    </div>
-                                    <WorkoutExerciseChecklist
-                                      workoutId={plan.plan_id}
-                                      userPlanId={plan.id}
-                                      onCompleteWorkout={(completed, total) => {
-                                        console.log(`Workout completed: ${completed}/${total} exercises`);
-                                      }}
-                                    />
-                                  </div>
-                                )}
-                              </div>
-                            ) : (
-                              <div className="text-center py-8 text-muted-foreground">
-                                <div className="text-4xl mb-2">💪</div>
-                                <p>Dia de descanso ou sem exercícios programados</p>
-                                <p className="text-sm mt-1">Aproveite para relaxar!</p>
-                              </div>
-                            )}
-                          </div>
+                          <ActiveWorkoutManager
+                            userPlan={plan}
+                            workoutDetails={workoutDetails}
+                            allExercises={workoutExercises.filter(ex => ex.workout_plan_id === plan.plan_id.toString())}
+                            userProgress={{
+                              completedDays: checkpoints.filter(cp => cp.user_plan_id === plan.id && cp.completed)
+                                .map(cp => ({ planDay: 1, completedDate: cp.checkpoint_date, completed: true }))
+                            }}
+                            onCompleteWorkout={async (dayNumber: number, exercises: any[]) => {
+                              await handleCompleteCheckpoint(plan.id);
+                            }}
+                            onStartWorkout={async (dayNumber: number) => {
+                              await handleStartWorkout(plan);
+                            }}
+                            onCompleteExercise={handleCompleteExercise}
+                          />
                         </TabsContent>
 
                         <TabsContent value="semana" className="space-y-4">

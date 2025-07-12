@@ -1,346 +1,317 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle, 
-  AlertDialogTrigger 
-} from '@/components/ui/alert-dialog';
-import { Separator } from '@/components/ui/separator';
-import { 
-  Trash2, 
-  PauseCircle, 
-  BarChart3, 
-  Trophy, 
-  Zap, 
-  Target,
-  Calendar,
-  Clock
-} from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { DetailedExerciseCard } from './DetailedExerciseCard';
+import { WorkoutDaySelector } from './WorkoutDaySelector';
+import { Play, Pause, CheckCircle, Trophy, Timer, Dumbbell, Zap, Calendar } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-
-interface UserPlan {
-  id: string;
-  user_id: string;
-  plan_id: number;
-  plan_title: string;
-  plan_type: string;
-  start_date: string;
-  target_days: number;
-  current_progress: number;
-  is_completed: boolean;
-}
 
 interface ActiveWorkoutManagerProps {
-  activePlans: UserPlan[];
-  onPlanRemoved: () => void;
-  getPlanProgress: (plan: UserPlan) => number;
-  getTodaysStats: () => {
-    totalExercises: number;
-    completedExercises: number;
-    totalPoints: number;
-    exerciseProgress: number;
-  };
+  userPlan: any;
+  workoutDetails: any;
+  allExercises: any[];
+  userProgress: any;
+  onCompleteWorkout: (dayNumber: number, exercises: any[]) => Promise<void>;
+  onStartWorkout: (dayNumber: number) => Promise<void>;
+  onCompleteExercise: (exerciseId: string, setsCompleted: number, repsCompleted?: string, weightUsed?: number, notes?: string) => Promise<void>;
 }
 
 export const ActiveWorkoutManager = ({
-  activePlans,
-  onPlanRemoved,
-  getPlanProgress,
-  getTodaysStats
+  userPlan,
+  workoutDetails,
+  allExercises,
+  userProgress,
+  onCompleteWorkout,
+  onStartWorkout,
+  onCompleteExercise
 }: ActiveWorkoutManagerProps) => {
   const { toast } = useToast();
-  const [removingPlan, setRemovingPlan] = useState<string | null>(null);
-  const [deletingData, setDeletingData] = useState<string | null>(null);
+  const [selectedDay, setSelectedDay] = useState<number>(1);
+  const [activeSession, setActiveSession] = useState<any>(null);
+  const [sessionExercises, setSessionExercises] = useState<any[]>([]);
+  const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
 
-  const todaysStats = getTodaysStats();
+  // Timer para cronometrar o treino
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (sessionStartTime && activeSession) {
+      interval = setInterval(() => {
+        setElapsedTime(Math.floor((Date.now() - sessionStartTime.getTime()) / 1000));
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [sessionStartTime, activeSession]);
 
-  const handleRemoveActivePlan = async (planId: string) => {
-    setRemovingPlan(planId);
+  // Agrupar exercícios por dia
+  const groupExercisesByDay = () => {
+    const days: { [key: number]: any[] } = {};
+    allExercises.forEach(exercise => {
+      const day = exercise.day_of_week || 1;
+      if (!days[day]) days[day] = [];
+      days[day].push(exercise);
+    });
     
-    try {
-      const { error } = await supabase
-        .from('user_plans')
-        .update({ is_completed: true })
-        .eq('id', planId);
+    return Object.keys(days).map(dayNum => ({
+      dayNumber: parseInt(dayNum),
+      exercises: days[parseInt(dayNum)]
+    }));
+  };
 
-      if (error) throw error;
+  const workoutDays = groupExercisesByDay();
+  const selectedDayExercises = workoutDays.find(day => day.dayNumber === selectedDay)?.exercises || [];
 
-      toast({
-        title: "Treino removido",
-        description: "O treino foi marcado como concluído e removido dos ativos.",
-      });
-
-      onPlanRemoved();
-    } catch (error) {
-      console.error('Error removing active plan:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível remover o treino. Tente novamente.",
-        variant: "destructive"
-      });
-    } finally {
-      setRemovingPlan(null);
+  const handleSelectDay = (dayNumber: number) => {
+    setSelectedDay(dayNumber);
+    // Reset active session if changing days
+    if (activeSession && activeSession.dayNumber !== dayNumber) {
+      setActiveSession(null);
+      setSessionExercises([]);
+      setSessionStartTime(null);
+      setElapsedTime(0);
     }
   };
 
-  const handleDeletePlanData = async (planId: string) => {
-    setDeletingData(planId);
-    
+  const handleStartWorkout = async () => {
     try {
-      // Delete all related data for this plan
-      const deleteTasks = [
-        // Delete exercise checkpoints
-        supabase
-          .from('exercise_checkpoints')
-          .delete()
-          .eq('user_plan_id', planId),
-        
-        // Delete workout sessions
-        supabase
-          .from('workout_sessions')
-          .delete()
-          .eq('user_plan_id', planId),
-        
-        // Delete user checkpoints
-        supabase
-          .from('user_checkpoints')
-          .delete()
-          .eq('user_plan_id', planId),
-        
-        // Finally delete the plan itself
-        supabase
-          .from('user_plans')
-          .delete()
-          .eq('id', planId)
-      ];
-
-      const results = await Promise.all(deleteTasks);
+      await onStartWorkout(selectedDay);
       
-      // Check for errors
-      for (const result of results) {
-        if (result.error) throw result.error;
-      }
-
+      // Criar sessão local de treino
+      const session = {
+        id: `session-${Date.now()}`,
+        dayNumber: selectedDay,
+        startTime: new Date(),
+        exercises: selectedDayExercises.map(ex => ({
+          ...ex,
+          completed: false,
+          setsCompleted: 0,
+          repsCompleted: '',
+          weightUsed: 0,
+          notes: ''
+        }))
+      };
+      
+      setActiveSession(session);
+      setSessionExercises(session.exercises);
+      setSessionStartTime(new Date());
+      setElapsedTime(0);
+      
       toast({
-        title: "Dados deletados",
-        description: "Todos os dados do treino foram deletados permanentemente.",
+        title: "Treino Iniciado! 💪",
+        description: `Dia ${selectedDay} - ${selectedDayExercises.length} exercícios`,
       });
-
-      onPlanRemoved();
     } catch (error) {
-      console.error('Error deleting plan data:', error);
+      console.error('Error starting workout:', error);
       toast({
         title: "Erro",
-        description: "Não foi possível deletar os dados. Tente novamente.",
+        description: "Não foi possível iniciar o treino",
         variant: "destructive"
       });
-    } finally {
-      setDeletingData(null);
     }
   };
 
-  if (activePlans.length === 0) {
-    return (
-      <Card>
-        <CardContent className="py-12 text-center">
-          <Target className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-          <h3 className="text-lg font-medium mb-2">Nenhum treino ativo</h3>
-          <p className="text-muted-foreground mb-4">
-            Você não tem treinos ativos no momento.
-          </p>
-          <Button asChild>
-            <a href="/planos">Escolher Treino</a>
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
+  const handleCompleteExerciseInSession = async (
+    exerciseId: string, 
+    setsCompleted: number, 
+    repsCompleted?: string, 
+    weightUsed?: number, 
+    notes?: string
+  ) => {
+    try {
+      await onCompleteExercise(exerciseId, setsCompleted, repsCompleted, weightUsed, notes);
+      
+      // Atualizar estado local
+      setSessionExercises(prev => 
+        prev.map(ex => 
+          ex.id === exerciseId 
+            ? { ...ex, completed: true, setsCompleted, repsCompleted, weightUsed, notes }
+            : ex
+        )
+      );
+      
+      toast({
+        title: "Exercício Concluído! ✅",
+        description: `+5 pontos ganhos`,
+      });
+    } catch (error) {
+      console.error('Error completing exercise:', error);
+    }
+  };
+
+  const handleCompleteWorkoutSession = async () => {
+    try {
+      const completedExercises = sessionExercises.filter(ex => ex.completed);
+      
+      await onCompleteWorkout(selectedDay, completedExercises);
+      
+      // Animação de conclusão
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      
+      // Reset session
+      setActiveSession(null);
+      setSessionExercises([]);
+      setSessionStartTime(null);
+      setElapsedTime(0);
+      
+      toast({
+        title: "Treino Concluído! 🎉",
+        description: `Dia ${selectedDay} finalizado com sucesso. +50 pontos bônus!`,
+      });
+    } catch (error) {
+      console.error('Error completing workout:', error);
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const getSessionProgress = () => {
+    if (!sessionExercises.length) return 0;
+    const completed = sessionExercises.filter(ex => ex.completed).length;
+    return (completed / sessionExercises.length) * 100;
+  };
 
   return (
     <div className="space-y-6">
-      {/* Summary Stats */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Progresso Hoje
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">{todaysStats.completedExercises}</div>
-              <div className="text-sm text-muted-foreground">de {todaysStats.totalExercises} exercícios</div>
-              <Progress 
-                value={todaysStats.exerciseProgress} 
-                className="mt-2 h-2" 
-              />
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">+{todaysStats.totalPoints}</div>
-              <div className="text-sm text-muted-foreground">pontos ganhos</div>
-              <div className="flex items-center justify-center gap-1 mt-2">
-                <Zap className="h-4 w-4 text-yellow-500" />
-                <span className="text-sm font-medium">Energia</span>
+      {/* Seletor de Dia */}
+      {!activeSession && (
+        <WorkoutDaySelector
+          workoutPlan={workoutDetails}
+          workoutDays={workoutDays}
+          onSelectDay={handleSelectDay}
+          selectedDay={selectedDay}
+          userProgress={userProgress}
+        />
+      )}
+
+      {/* Sessão Ativa */}
+      {activeSession && (
+        <Card className="border-primary">
+          <CardHeader className="bg-primary/5">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Dumbbell className="h-5 w-5" />
+                  Treino em Andamento - Dia {activeSession.dayNumber}
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  {sessionExercises.length} exercícios | Iniciado às {format(sessionStartTime!, 'HH:mm')}
+                </p>
+              </div>
+              <div className="text-right">
+                <div className="flex items-center gap-2 text-lg font-bold">
+                  <Timer className="h-5 w-5" />
+                  {formatTime(elapsedTime)}
+                </div>
+                <Badge variant="default">
+                  {sessionExercises.filter(ex => ex.completed).length}/{sessionExercises.length} completos
+                </Badge>
               </div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">{Math.round(todaysStats.exerciseProgress)}%</div>
-              <div className="text-sm text-muted-foreground">progresso do dia</div>
-              <div className="flex items-center justify-center gap-1 mt-2">
-                <Trophy className="h-4 w-4 text-orange-500" />
-                <span className="text-sm font-medium">Meta</span>
+            <Progress value={getSessionProgress()} className="h-2" />
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              {sessionExercises.map((exercise) => (
+                <DetailedExerciseCard
+                  key={exercise.id}
+                  exercise={exercise}
+                  onComplete={handleCompleteExerciseInSession}
+                />
+              ))}
+              
+              <div className="flex gap-3 pt-4 border-t">
+                <Button
+                  onClick={handleCompleteWorkoutSession}
+                  disabled={sessionExercises.filter(ex => ex.completed).length === 0}
+                  className="flex-1"
+                  size="lg"
+                >
+                  <Trophy className="h-5 w-5 mr-2" />
+                  Finalizar Treino do Dia {activeSession.dayNumber}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setActiveSession(null);
+                    setSessionExercises([]);
+                    setSessionStartTime(null);
+                    setElapsedTime(0);
+                  }}
+                >
+                  <Pause className="h-4 w-4 mr-2" />
+                  Pausar
+                </Button>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
-      {/* Active Plans */}
-      <div className="grid gap-6">
-        {activePlans.map((plan) => {
-          const progress = getPlanProgress(plan);
-          const isRemoving = removingPlan === plan.id;
-          const isDeleting = deletingData === plan.id;
-
-          return (
-            <Card key={plan.id} className="overflow-hidden">
-              <CardHeader className="pb-4">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <CardTitle className="text-xl">{plan.plan_title}</CardTitle>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        Iniciado em {format(new Date(plan.start_date), 'dd MMM yyyy', { locale: ptBR })}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        {plan.current_progress} de {plan.target_days} dias
-                      </span>
+      {/* Preview do Dia Selecionado */}
+      {!activeSession && selectedDayExercises.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Dia {selectedDay} - {selectedDayExercises.length} Exercícios
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3 mb-4">
+              {selectedDayExercises.map((exercise, idx) => (
+                <div key={exercise.id} className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+                  <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">
+                    {idx + 1}
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-medium">{exercise.exercise_name}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {exercise.sets} séries × {exercise.reps} repetições
+                      {exercise.rest_seconds && ` • ${exercise.rest_seconds}s descanso`}
                     </div>
                   </div>
-                  <Badge variant="default">Treino Ativo</Badge>
+                  <Badge variant="outline">{exercise.sets} × {exercise.reps}</Badge>
                 </div>
-              </CardHeader>
+              ))}
+            </div>
+            
+            <Button 
+              onClick={handleStartWorkout}
+              size="lg"
+              className="w-full"
+            >
+              <Play className="h-5 w-5 mr-2" />
+              Iniciar Treino do Dia {selectedDay}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
-              <CardContent className="space-y-6">
-                {/* Progress */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Progresso Geral</span>
-                    <span className="font-medium">{progress.toFixed(1)}%</span>
-                  </div>
-                  <Progress value={progress} className="h-3" />
-                </div>
-
-                <Separator />
-
-                {/* Plan Management Actions */}
-                <div className="space-y-4">
-                  <h4 className="font-medium text-sm">Gerenciamento do Treino</h4>
-                  
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    {/* Remove from Active */}
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          disabled={isRemoving || isDeleting}
-                          className="flex items-center gap-2"
-                        >
-                          <PauseCircle className="h-4 w-4" />
-                          Remover dos Ativos
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Remover treino dos ativos?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Esta ação irá marcar o treino como concluído e removê-lo da lista de treinos ativos. 
-                            Seus dados de progresso serão mantidos. Você poderá vê-lo na seção de treinos concluídos.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction 
-                            onClick={() => handleRemoveActivePlan(plan.id)}
-                            disabled={isRemoving}
-                          >
-                            {isRemoving ? 'Removendo...' : 'Remover'}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-
-                    {/* Delete All Data */}
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button 
-                          variant="destructive" 
-                          size="sm"
-                          disabled={isRemoving || isDeleting}
-                          className="flex items-center gap-2"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Deletar Dados
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Deletar todos os dados do treino?</AlertDialogTitle>
-                          <AlertDialogDescription className="space-y-2">
-                            <p>
-                              <strong>Atenção:</strong> Esta ação é irreversível e irá deletar permanentemente:
-                            </p>
-                            <ul className="list-disc list-inside space-y-1 text-sm">
-                              <li>Todo o histórico de exercícios realizados</li>
-                              <li>Pontos e conquistas relacionadas</li>
-                              <li>Sessões de treino registradas</li>
-                              <li>O plano de treino da sua lista</li>
-                            </ul>
-                            <p className="text-destructive font-medium">
-                              Esta ação não pode ser desfeita!
-                            </p>
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction 
-                            onClick={() => handleDeletePlanData(plan.id)}
-                            disabled={isDeleting}
-                            className="bg-destructive hover:bg-destructive/90"
-                          >
-                            {isDeleting ? 'Deletando...' : 'Deletar Tudo'}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-
-                  <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded">
-                    <p><strong>Dica:</strong> Use "Remover dos Ativos" se quiser pausar o treino mantendo seu progresso, 
-                    ou "Deletar Dados" se quiser começar do zero.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+      {/* Mensagem se não há exercícios */}
+      {!activeSession && selectedDayExercises.length === 0 && (
+        <Card>
+          <CardContent className="p-8 text-center">
+            <Dumbbell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium mb-2">Nenhum exercício programado</h3>
+            <p className="text-muted-foreground">
+              Não há exercícios programados para o Dia {selectedDay} deste plano.
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
