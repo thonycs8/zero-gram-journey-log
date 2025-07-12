@@ -304,13 +304,60 @@ const Workouts = () => {
                         </div>
                       </div>
 
+                      {/* Plan Summary */}
+                      <div className="p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg border">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Target className="h-5 w-5 text-primary" />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-sm">{plan.plan_title}</h4>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {workoutDetails?.description || 'Plano de treino personalizado para seus objetivos'}
+                            </p>
+                            <div className="flex items-center gap-4 mt-2 text-xs">
+                              <span className="flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                {plan.target_days} dias
+                              </span>
+                              {workoutDetails?.difficulty && (
+                                <Badge variant="outline" className="text-xs">
+                                  {workoutDetails.difficulty}
+                                </Badge>
+                              )}
+                              {workoutDetails?.frequency && (
+                                <span className="text-muted-foreground">
+                                  {workoutDetails.frequency}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Motivational Tip */}
+                      <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                        <div className="flex items-start gap-2">
+                          <div className="text-yellow-600 dark:text-yellow-400 mt-0.5">💡</div>
+                          <div>
+                            <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Dica do Dia</p>
+                            <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                              {todaysExercises.length > 0 
+                                ? "Mantenha o foco na execução correta dos exercícios. Qualidade sempre supera quantidade!"
+                                : "Use dias de descanso para alongamentos leves e hidratação. A recuperação é parte do crescimento!"
+                              }
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
                       {/* Enhanced Workout Tabs */}
                       <Tabs defaultValue="session" className="w-full">
                         <TabsList className="grid w-full grid-cols-4">
-                          <TabsTrigger value="session">Sessão</TabsTrigger>
-                          <TabsTrigger value="routine">Rotina</TabsTrigger>
-                          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                          <TabsTrigger value="schedule">Agenda</TabsTrigger>
+                          <TabsTrigger value="session">Hoje</TabsTrigger>
+                          <TabsTrigger value="routine">Programa</TabsTrigger>
+                          <TabsTrigger value="analytics">Estatísticas</TabsTrigger>
+                          <TabsTrigger value="schedule">Calendario</TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="session" className="space-y-4">
