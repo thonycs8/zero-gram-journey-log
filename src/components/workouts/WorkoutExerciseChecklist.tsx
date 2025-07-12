@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -8,6 +8,8 @@ import { Separator } from '@/components/ui/separator';
 import { CheckCircle, Timer, Trophy, Zap, Star, Target } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Exercise {
   name: string;
@@ -23,14 +25,114 @@ interface WorkoutDay {
 
 interface WorkoutExerciseChecklistProps {
   workoutId: number;
+  userPlanId?: string;
   onCompleteWorkout: (completedExercises: number, totalExercises: number) => void;
 }
 
-export const WorkoutExerciseChecklist = ({ workoutId, onCompleteWorkout }: WorkoutExerciseChecklistProps) => {
+export const WorkoutExerciseChecklist = ({ workoutId, userPlanId, onCompleteWorkout }: WorkoutExerciseChecklistProps) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [completedExercises, setCompletedExercises] = useState<{ [key: string]: boolean }>({});
   const [currentDay, setCurrentDay] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [savedExercises, setSavedExercises] = useState<Set<string>>(new Set());
+  const [totalPointsEarned, setTotalPointsEarned] = useState(0);
+
+  // Load saved progress on component mount
+  useEffect(() => {
+    if (user && userPlanId) {
+      loadSavedProgress();
+    }
+  }, [user, userPlanId, workoutId]);
+
+  const loadSavedProgress = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Load exercise checkpoints for today
+      const { data: exerciseData, error } = await supabase
+        .from('exercise_checkpoints')
+        .select('*')
+        .eq('user_id', user?.id)
+        .eq('user_plan_id', userPlanId)
+        .eq('workout_date', today);
+
+      if (error) throw error;
+
+      if (exerciseData && exerciseData.length > 0) {
+        const completed: { [key: string]: boolean } = {};
+        const saved = new Set<string>();
+        let totalPoints = 0;
+
+        exerciseData.forEach((exercise) => {
+          const exerciseKey = `${currentDay}-${exercise.exercise_name}`;
+          if (exercise.is_completed) {
+            completed[exerciseKey] = true;
+            saved.add(exerciseKey);
+            totalPoints += exercise.points_earned;
+          }
+        });
+
+        setCompletedExercises(completed);
+        setSavedExercises(saved);
+        setTotalPointsEarned(totalPoints);
+      }
+    } catch (error) {
+      console.error('Error loading saved progress:', error);
+    }
+  };
+
+  const saveExerciseProgress = async (exerciseId: string, exerciseName: string, points: number) => {
+    if (!user || !userPlanId) return;
+
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      
+      const { error } = await supabase
+        .from('exercise_checkpoints')
+        .upsert({
+          user_id: user.id,
+          user_plan_id: userPlanId,
+          exercise_id: `${workoutId}-${exerciseId}`,
+          exercise_name: exerciseName,
+          workout_date: today,
+          is_completed: true,
+          points_earned: points,
+          total_sets: parseInt(exercises[currentDay]?.exercises.find(ex => ex.name === exerciseName)?.sets?.replace('x', '') || '3'),
+          sets_completed: parseInt(exercises[currentDay]?.exercises.find(ex => ex.name === exerciseName)?.sets?.replace('x', '') || '3'),
+          reps_completed: exercises[currentDay]?.exercises.find(ex => ex.name === exerciseName)?.reps || '',
+        });
+
+      if (error) throw error;
+
+      setSavedExercises(prev => new Set(prev).add(exerciseId));
+      setTotalPointsEarned(prev => prev + points);
+
+      // Update user stats
+      const { error: statsError } = await supabase
+        .from('user_stats')
+        .upsert({
+          user_id: user.id,
+          total_points: totalPointsEarned + points,
+          total_calculations: 1,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (statsError) {
+        console.error('Error updating user stats:', statsError);
+      }
+
+    } catch (error) {
+      console.error('Error saving exercise progress:', error);
+      toast({
+        title: "Erro ao salvar progresso",
+        description: "Não foi possível salvar o progresso do exercício",
+        variant: "destructive"
+      });
+    }
+  };
 
   const getWorkoutExercises = (workoutId: number) => {
     switch (workoutId) {
@@ -140,7 +242,7 @@ export const WorkoutExerciseChecklist = ({ workoutId, onCompleteWorkout }: Worko
   const exercises = getWorkoutExercises(workoutId);
   const currentWorkout = exercises[currentDay] || exercises[0];
 
-  const handleExerciseToggle = (exerciseId: string) => {
+  const handleExerciseToggle = async (exerciseId: string) => {
     const newState = {
       ...completedExercises,
       [exerciseId]: !completedExercises[exerciseId]
@@ -150,6 +252,13 @@ export const WorkoutExerciseChecklist = ({ workoutId, onCompleteWorkout }: Worko
 
     // Check if exercise was just completed
     if (!completedExercises[exerciseId]) {
+      // Save progress to database
+      const exerciseIndex = parseInt(exerciseId.split('-')[1]);
+      const exerciseName = currentWorkout.exercises[exerciseIndex]?.name;
+      const points = 5;
+      
+      await saveExerciseProgress(exerciseId, exerciseName, points);
+
       // Show celebration animation
       confetti({
         particleCount: 30,
@@ -159,7 +268,7 @@ export const WorkoutExerciseChecklist = ({ workoutId, onCompleteWorkout }: Worko
 
       toast({
         title: "Exercício Concluído! 🎉",
-        description: "+5 pontos ganhos",
+        description: "+5 pontos ganhos e salvos",
         duration: 2000,
       });
     }
@@ -206,7 +315,7 @@ export const WorkoutExerciseChecklist = ({ workoutId, onCompleteWorkout }: Worko
   };
 
   const getTotalPoints = () => {
-    return getCompletedCount() * 5 + (getProgress() === 100 ? 20 : 0);
+    return totalPointsEarned + (getCompletedCount() * 5) + (getProgress() === 100 ? 20 : 0);
   };
 
   return (

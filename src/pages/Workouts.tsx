@@ -457,6 +457,7 @@ const Workouts = () => {
                             <h4 className="font-medium mb-4">Programa Gamificado</h4>
                             <WorkoutExerciseChecklist 
                               workoutId={plan.plan_id} 
+                              userPlanId={plan.id}
                               onCompleteWorkout={(completed, total) => {
                                 console.log(`Workout completed: ${completed}/${total} exercises`);
                               }}
