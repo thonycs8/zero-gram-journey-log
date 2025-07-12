@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -304,46 +305,15 @@ const Workouts = () => {
                         </div>
                       </div>
 
-                      {/* Plan Summary */}
+                      {/* Brief Plan Summary */}
                       <div className="p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg border">
-                        <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <Target className="h-5 w-5 text-primary" />
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-sm">{plan.plan_title}</h4>
+                        <div className="flex items-start gap-2">
+                          <span className="text-lg">💪</span>
+                          <div>
+                            <p className="text-sm font-medium">{plan.plan_title}</p>
                             <p className="text-xs text-muted-foreground mt-1">
-                              {workoutDetails?.description || 'Plano de treino personalizado para seus objetivos'}
+                              {workoutDetails?.description || 'Plano de treino personalizado para alcançar seus objetivos de forma eficiente e progressiva'}
                             </p>
-                            <div className="flex items-center gap-4 mt-2 text-xs">
-                              <span className="flex items-center gap-1">
-                                <Calendar className="h-3 w-3" />
-                                {plan.target_days} dias
-                              </span>
-                              {workoutDetails?.difficulty && (
-                                <Badge variant="outline" className="text-xs">
-                                  {workoutDetails.difficulty}
-                                </Badge>
-                              )}
-                              {workoutDetails?.frequency && (
-                                <span className="text-muted-foreground">
-                                  {workoutDetails.frequency}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Brief Plan Summary */}
-                        <div className="mt-4 pt-4 border-t border-border/50">
-                          <div className="flex items-start gap-2">
-                            <span className="text-lg">💪</span>
-                            <div>
-                              <p className="text-sm font-medium">{plan.plan_title}</p>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {workoutDetails?.description || 'Plano de treino personalizado para alcançar seus objetivos de forma eficiente e progressiva'}
-                              </p>
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -365,14 +335,14 @@ const Workouts = () => {
                       </div>
 
                       {/* Enhanced Workout Tabs */}
-                      <Tabs defaultValue="today" className="w-full">
+                      <Tabs defaultValue="hoje" className="w-full">
                         <TabsList className="grid w-full grid-cols-3">
-                          <TabsTrigger value="today">Hoje</TabsTrigger>
-                          <TabsTrigger value="week">Semana</TabsTrigger>
-                          <TabsTrigger value="progress">Progresso</TabsTrigger>
+                          <TabsTrigger value="hoje">Hoje</TabsTrigger>
+                          <TabsTrigger value="semana">Semana</TabsTrigger>
+                          <TabsTrigger value="progresso">Progresso</TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="today" className="space-y-4">
+                        <TabsContent value="hoje" className="space-y-4">
                           <div className="p-4 bg-muted/50 rounded-lg">
                             <div className="flex items-center justify-between mb-4">
                               <div>
@@ -421,36 +391,16 @@ const Workouts = () => {
                                   </div>
                                 ) : (
                                   <div className="space-y-3">
-                                    {todaysExercises.map((exercise, index) => (
-                                      <div key={exercise.id} className="flex items-center space-x-3 p-3 bg-background rounded border">
-                                        <Checkbox
-                                          id={exercise.id}
-                                          checked={completedExercises[exercise.id] || false}
-                                          onCheckedChange={() => handleExerciseToggle(exercise.id)}
-                                        />
-                                        <div className="flex-1">
-                                          <div className="font-medium">{exercise.exercise_name}</div>
-                                          <div className="text-sm text-muted-foreground flex items-center gap-4">
-                                            <span>{exercise.sets} séries</span>
-                                            <span>{exercise.reps} repetições</span>
-                                            {exercise.rest_seconds && (
-                                              <span className="flex items-center gap-1">
-                                                <Timer className="h-3 w-3" />
-                                                {Math.floor(exercise.rest_seconds / 60)}min descanso
-                                              </span>
-                                            )}
-                                          </div>
-                                          {exercise.notes && (
-                                            <div className="text-xs text-muted-foreground mt-1">
-                                              💡 {exercise.notes}
-                                            </div>
-                                          )}
-                                        </div>
-                                        <Badge variant="outline" className="text-xs">
-                                          Ex. {index + 1}
-                                        </Badge>
-                                      </div>
-                                    ))}
+                                    <div className="text-sm font-medium text-primary mb-3">
+                                      🎯 Programa Gamificado - Marque cada exercício como concluído
+                                    </div>
+                                    <WorkoutExerciseChecklist
+                                      workoutId={plan.plan_id}
+                                      userPlanId={plan.id}
+                                      onCompleteWorkout={(completed, total) => {
+                                        console.log(`Workout completed: ${completed}/${total} exercises`);
+                                      }}
+                                    />
                                   </div>
                                 )}
                               </div>
@@ -464,7 +414,7 @@ const Workouts = () => {
                           </div>
                         </TabsContent>
 
-                        <TabsContent value="week" className="space-y-4">
+                        <TabsContent value="semana" className="space-y-4">
                           <div className="space-y-4">
                             <h4 className="font-medium">Agenda Semanal</h4>
                             <div className="grid gap-3">
@@ -521,7 +471,7 @@ const Workouts = () => {
                           </div>
                         </TabsContent>
 
-                        <TabsContent value="progress" className="space-y-4">
+                        <TabsContent value="progresso" className="space-y-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <Card>
                               <CardHeader className="pb-2">
