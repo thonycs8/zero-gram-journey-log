@@ -49,13 +49,21 @@ export const ActiveWorkoutManager = ({
     return () => clearInterval(interval);
   }, [sessionStartTime, activeSession]);
 
-  // Agrupar exercícios por dia
+  // Agrupar exercícios por dia do plano
   const groupExercisesByDay = () => {
     const days: { [key: number]: any[] } = {};
     allExercises.forEach(exercise => {
-      const day = exercise.day_of_week || 1;
-      if (!days[day]) days[day] = [];
-      days[day].push(exercise);
+      // Use order_index or a custom day mapping instead of day_of_week
+      // If the exercise has a day_of_week, map it to sequential plan days
+      let planDay = exercise.day_of_week || 1;
+      
+      // Convert day_of_week (0-6) to plan days (1-7) if needed
+      if (exercise.day_of_week !== undefined) {
+        planDay = exercise.day_of_week === 0 ? 7 : exercise.day_of_week; // Sunday becomes day 7
+      }
+      
+      if (!days[planDay]) days[planDay] = [];
+      days[planDay].push(exercise);
     });
     
     return Object.keys(days).map(dayNum => ({

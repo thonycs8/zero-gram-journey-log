@@ -30,6 +30,18 @@ export const WorkoutDaySelector = ({
 }: WorkoutDaySelectorProps) => {
   const [hoveredDay, setHoveredDay] = useState<number | null>(null);
 
+  // Determine total days in the plan
+  const maxDays = Math.max(...workoutDays.map(day => day.dayNumber), 7); // At least 7 days
+  const planDays = Array.from({ length: maxDays }, (_, i) => {
+    const dayNumber = i + 1;
+    const dayData = workoutDays.find(day => day.dayNumber === dayNumber);
+    return {
+      dayNumber,
+      exercises: dayData?.exercises || [],
+      hasExercises: dayData ? dayData.exercises.length > 0 : false
+    };
+  });
+
   const getDayStatus = (dayNumber: number) => {
     const dayProgress = userProgress?.completedDays?.find((day: any) => day.planDay === dayNumber);
     if (dayProgress?.completed) return 'completed';
@@ -39,6 +51,12 @@ export const WorkoutDaySelector = ({
 
   const getDayColor = (dayNumber: number) => {
     const status = getDayStatus(dayNumber);
+    const planDay = planDays.find(d => d.dayNumber === dayNumber);
+    
+    if (!planDay?.hasExercises) {
+      return 'bg-muted/20 border-muted text-muted-foreground opacity-50';
+    }
+    
     switch (status) {
       case 'completed': return 'bg-green-50 border-green-200 hover:bg-green-100';
       case 'selected': return 'bg-primary/10 border-primary hover:bg-primary/20';
@@ -48,8 +66,9 @@ export const WorkoutDaySelector = ({
 
   const getNextAvailableDay = () => {
     const completedDays = userProgress?.completedDays?.map((day: any) => day.planDay) || [];
-    for (let i = 1; i <= workoutDays.length; i++) {
-      if (!completedDays.includes(i)) {
+    for (let i = 1; i <= maxDays; i++) {
+      const planDay = planDays.find(d => d.dayNumber === i);
+      if (planDay?.hasExercises && !completedDays.includes(i)) {
         return i;
       }
     }
@@ -69,15 +88,17 @@ export const WorkoutDaySelector = ({
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-4">
-          {workoutDays.map((day) => {
+          {planDays.map((day) => {
             const status = getDayStatus(day.dayNumber);
             const dayProgress = userProgress?.completedDays?.find((d: any) => d.planDay === day.dayNumber);
             
             return (
               <div
                 key={day.dayNumber}
-                className={`relative p-4 rounded-lg border cursor-pointer transition-all duration-200 ${getDayColor(day.dayNumber)}`}
-                onClick={() => onSelectDay(day.dayNumber)}
+                className={`relative p-4 rounded-lg border transition-all duration-200 ${getDayColor(day.dayNumber)} ${
+                  day.hasExercises ? 'cursor-pointer' : 'cursor-not-allowed'
+                }`}
+                onClick={() => day.hasExercises && onSelectDay(day.dayNumber)}
                 onMouseEnter={() => setHoveredDay(day.dayNumber)}
                 onMouseLeave={() => setHoveredDay(null)}
               >
@@ -89,7 +110,13 @@ export const WorkoutDaySelector = ({
                     {day.exercises.length} exercícios
                   </div>
                   
-                  {status === 'completed' && (
+                  {!day.hasExercises && (
+                    <Badge variant="outline" className="text-xs opacity-50">
+                      Descanso
+                    </Badge>
+                  )}
+                  
+                  {day.hasExercises && status === 'completed' && (
                     <div className="space-y-1">
                       <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
                         <CheckCircle className="h-3 w-3 mr-1" />
@@ -103,14 +130,14 @@ export const WorkoutDaySelector = ({
                     </div>
                   )}
                   
-                  {status === 'selected' && (
+                  {day.hasExercises && status === 'selected' && (
                     <Badge variant="default" className="text-xs">
                       <Play className="h-3 w-3 mr-1" />
                       Selecionado
                     </Badge>
                   )}
                   
-                  {status === 'available' && hoveredDay === day.dayNumber && (
+                  {day.hasExercises && status === 'available' && hoveredDay === day.dayNumber && (
                     <Badge variant="outline" className="text-xs">
                       <Clock className="h-3 w-3 mr-1" />
                       Disponível
@@ -119,7 +146,7 @@ export const WorkoutDaySelector = ({
                 </div>
                 
                 {/* Preview dos exercícios ao hover */}
-                {hoveredDay === day.dayNumber && (
+                {hoveredDay === day.dayNumber && day.hasExercises && (
                   <div className="absolute top-full left-0 right-0 mt-2 p-3 bg-card border rounded-lg shadow-lg z-10 max-w-xs">
                     <div className="text-sm font-medium mb-2">Exercícios do Dia {day.dayNumber}:</div>
                     <div className="space-y-1 text-xs text-muted-foreground">
