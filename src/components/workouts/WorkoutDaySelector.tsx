@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -82,7 +83,7 @@ export const WorkoutDaySelector = ({
           Selecionar Dia do Treino
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Escolha qual dia do plano "{workoutPlan?.title || 'Carregando...'}" você quer treinar hoje
+          Escolha qual dia do plano "{workoutPlan?.title || 'Seu Plano de Treino'}" você quer treinar hoje
         </p>
       </CardHeader>
       <CardContent>
