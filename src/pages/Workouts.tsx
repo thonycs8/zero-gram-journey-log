@@ -203,77 +203,131 @@ const Workouts = () => {
         </div>
 
         {/* Enhanced Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Target className="h-6 w-6 text-primary" />
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-2xl font-bold">{activePlans.length}</div>
+                  <div className="text-3xl font-bold text-primary">{activePlans.length}</div>
                   <div className="text-sm text-muted-foreground">Treinos Ativos</div>
                 </div>
+                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                  <Target className="h-6 w-6 text-primary" />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center">
+          <Card className="relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-500/10" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-3xl font-bold text-blue-600">{todaysStats.completedExercises}</div>
+                  <div className="text-sm text-muted-foreground">Exercícios Hoje</div>
+                  <div className="text-xs text-blue-600 font-medium">
+                    de {todaysStats.totalExercises} planejados
+                  </div>
+                </div>
+                <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
                   <Dumbbell className="h-6 w-6 text-blue-600" />
                 </div>
-                <div>
-                  <div className="text-2xl font-bold">{todaysStats.completedExercises}</div>
-                  <div className="text-sm text-muted-foreground">Exercícios Hoje</div>
-                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
-                  <Trophy className="h-6 w-6 text-green-600" />
-                </div>
+          <Card className="relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-green-500/10" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-2xl font-bold">{todaysStats.completedWorkouts}</div>
-                  <div className="text-sm text-muted-foreground">Treinos Concluídos</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
-                  <Zap className="h-6 w-6 text-yellow-600" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">+{todaysStats.totalPoints}</div>
+                  <div className="text-3xl font-bold text-green-600">+{todaysStats.totalPoints}</div>
                   <div className="text-sm text-muted-foreground">Pontos Hoje</div>
+                  <div className="text-xs text-green-600 font-medium">
+                    {todaysStats.completedWorkouts} treinos completos
+                  </div>
+                </div>
+                <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center">
+                  <Zap className="h-6 w-6 text-green-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center">
-                  <BarChart3 className="h-6 w-6 text-orange-600" />
-                </div>
+          <Card className="relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-orange-500/10" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-2xl font-bold">{Math.round(todaysStats.exerciseProgress)}%</div>
-                  <div className="text-sm text-muted-foreground">Progresso</div>
+                  <div className="text-3xl font-bold text-orange-600">{Math.round(todaysStats.exerciseProgress)}%</div>
+                  <div className="text-sm text-muted-foreground">Progresso Hoje</div>
+                  <div className="mt-2">
+                    <Progress 
+                      value={todaysStats.exerciseProgress} 
+                      className="h-2"
+                    />
+                  </div>
+                </div>
+                <div className="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center">
+                  <BarChart3 className="h-6 w-6 text-orange-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
+
+        {/* Quick Actions */}
+        {activePlans.length > 0 && (
+          <Card className="border-primary/20 bg-gradient-to-r from-primary/5 via-background to-secondary/5">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-semibold text-lg">Treino Rápido</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Continue de onde parou ou inicie um novo treino
+                  </p>
+                </div>
+                <Play className="h-6 w-6 text-primary" />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button 
+                  size="lg" 
+                  className="h-auto py-4 flex-col gap-2"
+                  onClick={() => handleStartWorkout(activePlans[0])}
+                >
+                  <Timer className="h-5 w-5" />
+                  <span>Iniciar Treino</span>
+                  <span className="text-xs opacity-80">Dia {getCurrentWeekDay() + 1}</span>
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="h-auto py-4 flex-col gap-2"
+                  asChild
+                >
+                  <a href="/planos">
+                    <Plus className="h-5 w-5" />
+                    <span>Novo Plano</span>
+                    <span className="text-xs opacity-80">Explorar treinos</span>
+                  </a>
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="lg" 
+                  className="h-auto py-4 flex-col gap-2"
+                >
+                  <Crown className="h-5 w-5" />
+                  <span>Conquistas</span>
+                  <span className="text-xs opacity-80">Ver progresso</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Gamification Dashboard */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -360,29 +414,69 @@ const Workouts = () => {
                         </div>
                       </div>
 
-                      {/* Brief Plan Summary */}
-                      <div className="p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg border">
-                        <div className="flex items-start gap-2">
-                          <span className="text-lg">💪</span>
-                          <div>
-                            <p className="text-sm font-medium">{plan.plan_title}</p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {workoutDetails?.description || 'Plano de treino personalizado para alcançar seus objetivos de forma eficiente e progressiva'}
-                            </p>
+                      {/* Enhanced Plan Summary */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg border border-primary/20">
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                              <Dumbbell className="h-5 w-5 text-primary" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">{plan.plan_title}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {workoutDetails?.description || 'Plano de treino personalizado para alcançar seus objetivos'}
+                              </p>
+                              <div className="flex items-center gap-2 mt-2">
+                                <Badge variant="outline" className="text-xs">
+                                  {workoutDetails?.difficulty || 'Personalizado'}
+                                </Badge>
+                                <Badge variant="secondary" className="text-xs">
+                                  {workoutDetails?.frequency || '4x/sem'}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-4 bg-gradient-to-br from-blue-500/5 to-blue-500/10 rounded-lg border border-blue-500/20">
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
+                              <Target className="h-5 w-5 text-blue-600" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-blue-800 dark:text-blue-200">Próximo Objetivo</p>
+                              <p className="text-xs text-blue-600 dark:text-blue-300 mt-1">
+                                {todaysExercises.length > 0 
+                                  ? `${todaysExercises.length} exercícios programados para hoje`
+                                  : "Dia de descanso - Prepare-se para amanhã!"
+                                }
+                              </p>
+                              <div className="mt-2">
+                                <Progress 
+                                  value={progress} 
+                                  className="h-2"
+                                />
+                                <p className="text-xs text-blue-600 mt-1">
+                                  {Math.round(progress)}% do plano concluído
+                                </p>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
 
                       {/* Motivational Tip */}
-                      <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                        <div className="flex items-start gap-2">
-                          <div className="text-yellow-600 dark:text-yellow-400 mt-0.5">💡</div>
+                      <div className="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+                            <span className="text-yellow-600 dark:text-yellow-400">💡</span>
+                          </div>
                           <div>
                             <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Dica do Dia</p>
                             <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
                               {todaysExercises.length > 0 
-                                ? "Mantenha o foco na execução correta dos exercícios. Qualidade sempre supera quantidade!"
-                                : "Use dias de descanso para alongamentos leves e hidratação. A recuperação é parte do crescimento!"
+                                ? "Mantenha o foco na execução correta dos exercícios. Qualidade sempre supera quantidade! Lembre-se de manter a respiração controlada durante os movimentos."
+                                : "Use dias de descanso para alongamentos leves e hidratação. A recuperação é parte fundamental do crescimento muscular!"
                               }
                             </p>
                           </div>
