@@ -207,9 +207,13 @@ export const useGamification = () => {
     return checkpoints.filter(cp => cp.checkpoint_date === today);
   };
 
-  // Get plan progress percentage
+  // Get plan progress percentage based on completed days
   const getPlanProgress = (plan: UserPlan) => {
-    return Math.min((plan.current_progress / plan.target_days) * 100, 100);
+    const completedDays = checkpoints.filter(
+      cp => cp.user_plan_id === plan.id && cp.completed
+    ).length;
+    
+    return Math.min((completedDays / plan.target_days) * 100, 100);
   };
 
   // Initialize data

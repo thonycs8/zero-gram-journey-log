@@ -290,10 +290,18 @@ const Workouts = () => {
                       {/* Progress */}
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
-                          <span>Progresso</span>
+                          <span>Progresso do Plano</span>
                           <span className="font-medium">{progress.toFixed(1)}%</span>
                         </div>
                         <Progress value={progress} className="h-3" />
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>
+                            {checkpoints.filter(cp => cp.user_plan_id === plan.id && cp.completed).length} de {plan.target_days} dias concluídos
+                          </span>
+                          <span>
+                            {plan.target_days - checkpoints.filter(cp => cp.user_plan_id === plan.id && cp.completed).length} dias restantes
+                          </span>
+                        </div>
                       </div>
 
                       {/* Enhanced Workout Tabs */}
