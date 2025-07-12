@@ -59,9 +59,9 @@ export const WorkoutDaySelector = ({
     }
     
     switch (status) {
-      case 'completed': return 'bg-green-50 border-green-200 hover:bg-green-100';
-      case 'selected': return 'bg-primary/10 border-primary hover:bg-primary/20';
-      default: return 'bg-muted/30 border-border hover:bg-muted/50';
+      case 'completed': return 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-300 hover:bg-green-500/20';
+      case 'selected': return 'bg-primary/10 border-primary hover:bg-primary/20 ring-2 ring-primary/20';
+      default: return 'bg-muted/30 border-border hover:bg-muted/50 hover:border-primary/30';
     }
   };
 
@@ -121,7 +121,7 @@ export const WorkoutDaySelector = ({
                   
                   {day.hasExercises && status === 'completed' && (
                     <div className="space-y-1">
-                      <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
+                      <Badge variant="secondary" className="text-xs bg-green-500/10 text-green-700 dark:text-green-300 border-green-500/30">
                         <CheckCircle className="h-3 w-3 mr-1" />
                         Concluído
                       </Badge>

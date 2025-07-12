@@ -498,7 +498,11 @@ const Workouts = () => {
                             planDays={getWorkoutPlanDays(plan.plan_id.toString())}
                             userProgress={{
                               completedDays: checkpoints.filter(cp => cp.user_plan_id === plan.id && cp.completed)
-                                .map(cp => ({ planDay: 1, completedDate: cp.checkpoint_date, completed: true }))
+                                .map((cp, index) => ({ 
+                                  planDay: index + 1, 
+                                  completedDate: cp.checkpoint_date, 
+                                  completed: true 
+                                }))
                             }}
                             onCompleteWorkout={async (dayNumber: number, exercises: any[]) => {
                               await handleCompleteCheckpoint(plan.id);
